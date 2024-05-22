@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>SyncTex | Login & Registration</title>
+</head>
+
+<body>         
+ <div class="wrapper">
+    <div class="animation-container">
+        <div class="typing-text">
+            <span>\begin{anything}</span>
+        </div>
+    </div>
+    <nav class="nav">
+        <div class="nav-logo">
+            <img src="logo_SyncTeX.svg" alt="Logo">
+        </div>
+      
+        <div class="nav-menu" id="navMenu">
+            <ul>
+                <li><a href="#" class="link features-button">Features</a></li>
+            </ul>
+        </div>
+        <div class="nav-button">
+            <button class="btn white-btn" id="loginBtn" onclick="login()">Sign In</button>
+            <button class="btn" id="registerBtn" onclick="register()">Sign Up</button>
+        </div>
+        <div class="nav-menu-btn">
+            <i class="bx bx-menu" onclick="myMenuFunction()"></i>
+        </div>
+    </nav>
+
+    <div class="welcome-text">
+    <h1>Welcome to SyncTex</h1>
+    <p><span class="italic">Where LaTeX meets collaboration</span></p>
+</div>
+
+<!----------------------------- Form box ----------------------------------->    
+    <div class="form-box">
+        
+        <!------------------- login form -------------------------->
+
+        <div class="login-container" id="login">
+            <div class="top">
+                <span>Don't have an account? <a href="#" onclick="register()">Sign Up</a></span>
+                <header>Login</header>
+            </div>
+
+
+            <div class="input-box">
+                <input type="text" class="input-field" placeholder="Username or Email">
+                <i class="bx bx-user"></i>
+            </div>
+            <div class="input-box">
+                <input type="password" class="input-field" placeholder="Password" id="login-password">
+                <i class="bx bx-lock-alt"></i>
+                <span class="toggle-password" onclick="togglePasswordVisibility('login-password')">
+                    <i class="bx bx-hide"></i>
+                </span>
+            </div>
+            <div class="input-box">
+                <input type="submit" class="submit" value="Sign In">
+            </div>
+            <div class="two-col">
+                <div class="one">
+                    <input type="checkbox" id="login-check">
+                    <label for="login-check"> Remember Me</label>
+                </div>
+                <div class="two">
+                    <label><a href="#">Forgot password?</a></label>
+                </div>
+            </div>
+
+            <div class="google-container">
+                <a href="#">
+                  <div class="g-sign-in-button">
+                    <div class="content-wrapper">
+                      <div class="logo-wrapper">
+                        <img src="https://developers.google.com/identity/images/g-logo.png">
+                      </div>
+                      <span class="text-container">
+                        <span>Sign in with Google</span>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </div>
+        </div>
+
+        <!------------------- registration form -------------------------->
+        <div class="register-container" id="register">
+            <div class="top">
+                <span>Have an account? <a href="#" onclick="login()">Login</a></span>
+                <header>Sign Up</header>
+            </div>
+            <div class="two-forms">
+                <div class="input-box">
+                    <input type="text" class="input-field" placeholder="Firstname">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="input-box">
+                    <input type="text" class="input-field" placeholder="Lastname">
+                    <i class="bx bx-user"></i>
+                </div>
+            </div>
+            <div class="input-box">
+                <input type="text" class="input-field" placeholder="Email">
+                <i class="bx bx-envelope"></i>
+            </div>
+            <div class="input-box">
+                <input type="password" class="input-field" placeholder="Password" id="register-password">
+                <i class="bx bx-lock-alt"></i>
+                <span class="toggle-password" onclick="togglePasswordVisibility('register-password')">
+                    <i class="bx bx-hide"></i>
+                </span>
+            </div>
+            <div class="input-box">
+                <input type="submit" class="submit" value="Register">
+            </div>
+            <div class="two-col">
+                <div class="one">
+                    <input type="checkbox" id="register-check">
+                    <label for="register-check"> Remember Me</label>
+                </div>
+                <div class="two">
+                    <label><a href="#">Terms & conditions</a></label>
+                </div>
+            </div>
+            <div class="google-container">
+                <a href="#">
+                  <div class="g-sign-in-button">
+                    <div class="content-wrapper">
+                      <div class="logo-wrapper">
+                        <img src="https://developers.google.com/identity/images/g-logo.png">
+                      </div>
+                      <span class="text-container">
+                        <span>Sign in with Google</span>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </div>
+        </div>
+
+        
+    </div>
+</div>   
+
+<!-- Features Section -->
+<section id="features">
+    <h2> { Features of SyncTex } </h2>
+   
+    <section id="intro" class="section">
+        <div class="content">
+            <h1>Write, collaborate, and create with SyncTex</h1>
+            <p>Discover how SyncTex empowers you to create, collaborate, and innovate with ease.</p>
+        </div>
+        <div class="image">
+            <img src="placeholder-intro.png" alt="Intro Image">
+        </div>
+    </section>
+
+    <section id="collaboration" class="section">
+        <div class="image">
+            <img src="placeholder-collab.png" alt="Collaboration Image">
+        </div>
+        <div class="content">
+            <h2>Collaboration</h2>
+            <p>Work seamlessly with your team in real-time, editing LaTeX documents together.</p>
+            <ul>
+                <li><i class="fas fa-users"></i> Real-time Collaboration</li>
+                <li><i class="fas fa-edit"></i> Simultaneous Editing</li>
+                <li><i class="fas fa-cursor"></i> Collaborative Cursors</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="productivity" class="section">
+        <div class="content">
+            <h2>Productivity</h2>
+            <p>Access powerful LaTeX editing tools, including syntax highlighting, autocompletion, and more.</p>
+            <ul>
+                <li><i class="fas fa-code"></i> LaTeX Editing Tools</li>
+                <li><i class="fas fa-file-alt"></i> Templates and Snippets</li>
+                <li><i class="fas fa-sync-alt"></i> Auto-Compilation</li>
+            </ul>
+        </div>
+        <div class="image">
+            <img src="placeholder-productivity.png" alt="Productivity Image">
+        </div>
+    </section>
+
+    <section id="flexibility" class="section">
+        <div class="image">
+            <img src="placeholder-flexibility.png" alt="Flexibility Image">
+        </div>
+        <div class="content">
+            <h2>Flexibility</h2>
+            <p>Enjoy seamless access to SyncTex from any device, whether desktop, tablet, or mobile.</p>
+            <ul>
+                <li><i class="fas fa-desktop"></i> Cross-Platform Compatibility</li>
+                <li><i class="fas fa-wifi-slash"></i> Offline Mode</li>
+                <li><i class="fas fa-cogs"></i> Customizable Workflows</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="security" class="section">
+        <div class="content">
+            <h2>Security</h2>
+            <p>Rest assured with end-to-end encryption, keeping your documents and communications secure.</p>
+            <ul>
+                <li><i class="fas fa-lock"></i> End-to-End Encryption</li>
+                <li><i class="fas fa-user-shield"></i> Access Controls</li>
+                <li><i class="fas fa-history"></i> Revision History</li>
+            </ul>
+        </div>
+        <div class="image">
+            <img src="placeholder-security.png" alt="Security Image">
+        </div>
+    </section>
+
+    <section id="cta" class="section">
+        <h2>Ready to revolutionize your LaTeX editing experience?</h2>
+        <button class="cta">Get Started with SyncTex</button>
+    </section>
+</section>
+
+
+<!--JS sectionn-->
+<script defer src="script.js"></script>
+</body>
+</html>
