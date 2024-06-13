@@ -1,6 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getDatabase, ref, push, set, update, serverTimestamp } from "firebase/database";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+import { getDatabase, ref, push, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyCkRs-4YJk27U8ugfIw99k3_dv0OIWvQ-4",
@@ -18,14 +19,26 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    var authFormRef = ref(database, 'auth-form');
-    var signInForm = document.getElementById('login');
-
-    document.getElementById('auth-form').addEventListener('submit', submitForm);
-    signInForm.addEventListener('submit', submitSignIN);
-    document.getElementById('google-signin').addEventListener('click', googleSignIn);
+var logInForm = document.getElementById('login-form');
+console.log("logInForm: ", logInForm);
+logInForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    handleLogIn();
 });
+
+function handleLogIn() {
+    debugger;
+    var signInEmail = getElementVal("login-email");
+    var signInPassword = getElementVal("login-password");
+
+    var errorMessageLogin = validateSignInForm(signInEmail, signInPassword);
+    if (errorMessageLogin) {
+        displayErrorLogin(errorMessageLogin);
+    } else {
+        signInUser(signInEmail, signInPassword);
+    }
+}
+
 
 function submitForm(e) {
     e.preventDefault();
@@ -139,21 +152,8 @@ const checkEmailAndRegister = (firstName, lastName, registerEmail, registerPassw
         });
 };
 
-function submitSignIN(e) {
-    e.preventDefault();
-
-    var signInEmail = getElementVal("login-email");
-    var signInPassword = getElementVal("login-password");
-
-    var errorMessageLogin = validateSignInForm(signInEmail, signInPassword);
-    if (errorMessageLogin) {
-        displayErrorLogin(errorMessageLogin);
-    } else {
-        signInUser(signInEmail, signInPassword);
-    }
-}
-
 function signInUser(email, password) {
+    debugger;
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
 
@@ -164,7 +164,9 @@ function signInUser(email, password) {
             // Updating timestamp
             updateSignInData(user.uid);
 
-            displaySuccessMessage("You have been logged in.");
+            // displaySuccessMessage("You have been logged in.");
+
+            window.location.href = '/landing page/index.html';
         })
         .catch((error) => {
             var errorCode = error.code;
@@ -220,6 +222,9 @@ function googleSignIn(e) {
             console.log("User signed in: ", user);
 
             displaySuccessMessage("Google sign-in successful!");
+
+            window.location.href = '/landing page/index.html';
+
         })
         .catch((error) => {
             console.error("Error during Google sign-in: ", error);

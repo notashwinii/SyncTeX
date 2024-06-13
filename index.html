@@ -42,126 +42,110 @@
     <p><span class="italic">Where LaTeX meets collaboration</span></p>
 </div>
 
-<!----------------------------- Form box ----------------------------------->    
-    <form id="auth-form" class="form-box">
+ 
+
+<div>
+    <!-- Login Form-->
+    <div>
+    <form class="form-box" id="login-form">
+        <div class="top">
+            <span> Don't have an account? <a href="#" onclick="register()">Sign Up</a></span>
+            <header>Login</header>
+        </div>
         
-        <!------------------- login form -------------------------->
-
-        <div class="login-container" id="login">
-
-            <div class="succes-message">You have been logged in.</div>
-                    <div class="error-message-login"></div>
-
-            <div class="top">
-                <span>Don't have an account? <a href="#" onclick="register()">Sign Up</a></span>
-                <header>Login</header>
+        <div class="input-box">
+            <input class="input-field" type="email" id="login-email" placeholder="Username or Email" required>
+            <i class="bx bx-user"></i>
+        </div>
+        <div class="input-box">
+            <input class="input-field" type="password"  id="login-password"  placeholder="Password" required>
+            <i class="bx bx-lock-alt"></i>
+            <span class="toggle-password" onclick="togglePasswordVisibility('login-password')">
+                <i class="bx bx-hide"></i>
+            </span>
+        </div>
+        <div class="input-box">
+            <button class="login-submit" type="submit">Log In</button>
+        </div>
+        <div class="two-col">
+            <div class="one">
+                <input type="checkbox" id="login-check">
+                <label for="login-check"> Remember Me</label>
             </div>
-
-
-            <div class="input-box">
-                <input type="text" id="login-email" class="input-field" placeholder="Username or Email">
-                <i class="bx bx-user"></i>
+            <div class="two">
+                <label><a href="#">Forgot password?</a></label>
             </div>
-            <div class="input-box">
-                <input type="password"  id="login-password" class="input-field" placeholder="Password">
-                <i class="bx bx-lock-alt"></i>
-                <span class="toggle-password" onclick="togglePasswordVisibility('login-password')">
-                    <i class="bx bx-hide"></i>
-                </span>
-            </div>
-            <div class="input-box">
-            <button type="login-submit" class="login-submit">Sign In</button>
-                
-            </div>
-            <div class="two-col">
-                <div class="one">
-                    <input type="checkbox" id="login-check">
-                    <label for="login-check"> Remember Me</label>
-                </div>
-                <div class="two">
-                    <label><a href="#">Forgot password?</a></label>
-                </div>
-            </div>
-
-            <div class="google-container">
-                <a href="#">
-                  <div class="g-sign-in-button">
-                    <div class="content-wrapper">
-                      <div class="logo-wrapper">
-                        <img src="https://developers.google.com/identity/images/g-logo.png">
-                      </div>
-                      <span class="text-container">
-                        <span>Continue with Google</span>
-                      </span>
-                    </div>
+        </div>
+        <div class="google-container">
+            <a href="#">
+              <div class="g-sign-in-button">
+                <div class="content-wrapper">
+                  <div class="logo-wrapper">
+                    <img src="https://developers.google.com/identity/images/g-logo.png">
                   </div>
-                </a>
+                  <span class="text-container">
+                    <span>Continue with Google</span>
+                  </span>
+                </div>
               </div>
-            
-        </div>
-
-        <!------------------- registration form -------------------------->
-
-        <div class="register-container" id="register">
-
-        
-                    <div class="register-message">Your account has been registered.</div>
-                    <div class="error-message"></div>
-                
-
-            <div class="top">
-                <span>Have an account? <a href="#" onclick="login()">Login</a></span>
-                <header>Sign Up</header>
-            </div>
-            <div class="two-forms">
-                <div class="input-box">
-                    <input type="text" id="first-name" class="input-field" placeholder="Firstname">
-                    <i class="bx bx-user"></i>
-                </div>
-                <div class="input-box">
-                    <input type="text" id="last-name" class="input-field" placeholder="Lastname">
-                    <i class="bx bx-user"></i>
-                </div>
-            </div>
-            <div class="input-box">
-                <input type="text" id="register-email" class="input-field" placeholder="Email">
-                <i class="bx bx-envelope"></i>
-            </div>
-            <div class="input-box">
-                <input type="password" id="register-password" class="input-field" placeholder="Password" id="register-password">
-                <i class="bx bx-lock-alt"></i>
-                <span class="toggle-password" onclick="togglePasswordVisibility('register-password')">
-                    <i class="bx bx-hide"></i>
-                </span>
-            </div>
-            <div class="input-box">
-                <button type="submit" class="submit">Sign Up</button>
-            </div>
-            <div class="two-col">
-                <div class="one">
-                    <input type="checkbox" id="register-check">
-                    <label for="register-check"> Remember Me</label>
-                </div>
-            </div>
-
-            <div class="google-container">
-                <a href="#">
-                  <button class="g-sign-in-button" id="google-signin-btn">
-                    <div class="content-wrapper">
-                      <div class="logo-wrapper">
-                        <img src="https://developers.google.com/identity/images/g-logo.png">
-                      </div>
-                      <span class="text-container">
-                        <span>Continue with Google</span>
-                      </span>
-                    </div>
-                </button>
-                </a>
-              </div>
-              
-        </div>
+            </a>
+          </div>
     </form>
-</div>   
+    </div>
+
+<!--Sign Up form-->
+    <div>
+        <form class="form-box" id="signup-form" action="handleSignUp()">
+        <div class="top">
+            <span> Have an account? <a href="#" onclick="login()">Log In</a></span>
+            <header>Sign Up</header>
+        </div>
+        <div class="input-box">
+            <input class="input-field" type="text" id="first-name"  placeholder="Firstname" required>
+            <i class="bx bx-user"></i>
+        </div>
+        <div class="input-box">
+            <input class="input-field" type="text" id="last-name"  placeholder="Lastname" required>
+            <i class="bx bx-user"></i>
+        </div>
+        <div class="input-box">
+            <input class="input-field" type="email" id="register-email"  placeholder="Email" required>
+            <i class="bx bx-envelope"></i>
+        </div>
+        <div class="input-box">
+            <input class="input-field" type="password" id="register-password"  placeholder="Password" id="register-password" required>
+            <i class="bx bx-lock-alt"></i>
+            <span class="toggle-password" onclick="togglePasswordVisibility('register-password')">
+                <i class="bx bx-hide"></i>
+            </span>
+        </div>
+        <div class="input-box">
+            <button class="signup-submit" type="submit">Sign Up</button>
+        </div>
+        <div class="two-col">
+            <div class="one">
+                <input type="checkbox" id="register-check">
+                <label for="register-check"> Remember Me</label>
+            </div>
+        </div>
+        <div class="google-container">
+            <a href="#">
+              <button class="g-sign-in-button" id="google-signin-btn">
+                <div class="content-wrapper">
+                  <div class="logo-wrapper">
+                    <img src="https://developers.google.com/identity/images/g-logo.png">
+                  </div>
+                  <span class="text-container">
+                    <span>Continue with Google</span>
+                  </span>
+                </div>
+            </button>
+            </a>
+          </div>
+</form>
+</div>
+
+</div>  
 
 <!-- Features Section -->
 <section id="features">
@@ -244,11 +228,7 @@
     </section>
 </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"> </script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-
-<script type="text/javascript" src="config.js"></script>
 <script type="text/javascript" src="script.js"></script>
+<script type="module" src="auth.js"></script>
 </body>
 </html>
