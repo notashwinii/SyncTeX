@@ -3,6 +3,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, Go
 import { getDatabase, ref, push, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
 
 
+
 const firebaseConfig = {
     apiKey: "AIzaSyCkRs-4YJk27U8ugfIw99k3_dv0OIWvQ-4",
     authDomain: "synctex-53952.firebaseapp.com",

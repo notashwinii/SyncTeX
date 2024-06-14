@@ -10,7 +10,7 @@ function myMenuFunction() {
 }
 
 // Typing animation for welcome text
-window.onload = function () {
+{/*window.onload = function () {
     var text = document.querySelector('.typing-text');
     var str = text.textContent.trim();
     var strArr = str.split('');
@@ -20,7 +20,7 @@ window.onload = function () {
         charSpan.textContent = char;
         text.appendChild(charSpan);
     });
-};
+};*/}
 
 // Toggle between login and register forms
 var loginBtn = document.getElementById("loginBtn");
