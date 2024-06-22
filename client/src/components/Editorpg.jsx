@@ -164,30 +164,24 @@ const Editorpg = ({ socket }) => {
         >
           <div className="flex flex-col h-screen">
             <div className="bg-[#6da7af] p-1 h-10 flex items-center justify-between">
-              <h2 className="text-lg text-[#F9EFD6] font-semibold">
+            <h2 className="text-lg text-[#F9EFD6] font-semibold">
                 Code Editor
               </h2>
+            <button
+                onClick={handleCompileClick}
+                className="bg-white hover:bg-[#618487] h-7 flex items-center text-[#5b8c92] font-bold py-2 px-4 rounded-lg " 
+                style={{ fontSize: "18px" }}
+              >
+                Compile
+              </button>
+              
             </div>
             <div className="flex-grow h-[calc(100dvh-5rem)]">
               <CodeEditor onChange={onCodeChange} code={code} />
             </div>
           </div>
           <div className="flex flex-col h-screen">
-            <header className="bg-[#6da7af] p-1 h-10 flex items-center">
-              <button
-                onClick={handleCompileClick}
-                className="bg-white hover:bg-[#618487] h-7 flex items-center text-[#5b8c92] font-bold py-2 px-4 rounded-lg"
-                style={{ fontSize: "18px" }}
-              >
-                Compile
-              </button>
-              <div
-                key="MdDownload"
-                className="cursor-pointer text-white hover:text-[#5b8c92] px-3"
-              >
-                <MdDownload />
-              </div>
-            </header>
+            
             <div className="flex-grow w-full h-full">
               {pdfUrl && (
                 <iframe

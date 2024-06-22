@@ -18,6 +18,7 @@ const CodeEditor = ({onChange,code }) => {
       value={code}
       name="RnadomName"
       editorProps={{ $blockScrolling: true }}
+      style={{ height: "93%", width: "calc(100% - 20px)"}}
     />
   );
 
