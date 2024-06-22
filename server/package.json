@@ -16,6 +16,7 @@
     "globals": "^15.6.0",
     "node-latex": "^3.1.0",
     "nodemon": "^3.1.4",
+    "pdflatex": "^0.0.1",
     "socket.io": "^4.7.5"
   }
 }

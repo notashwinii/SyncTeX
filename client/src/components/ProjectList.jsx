@@ -1,6 +1,6 @@
 import React from "react";
 import { RiFilePdfLine, RiDeleteBin6Line } from "react-icons/ri";
-import { RiFilePdfLine, RiDeleteBin6Line } from "react-icons/ri"; // Importing icons from react-icons
+
 import { useNavigate } from "react-router";
 
 const ProjectList = ({ projects }) => {
