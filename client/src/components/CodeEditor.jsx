@@ -9,7 +9,6 @@ import "ace-builds/src-noconflict/ext-language_tools";
 const CodeEditor = ({onChange,code }) => {
   
 
-
   return (
     <AceEditor
       mode="latex"

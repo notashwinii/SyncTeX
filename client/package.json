@@ -3,15 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@codemirror/basic-setup": "^0.20.0",
-    "@codemirror/collab": "^6.1.1",
-    "@codemirror/commands": "^6.6.0",
-    "@codemirror/history": "^0.19.2",
-    "@codemirror/lang-javascript": "^6.2.2",
-    "@codemirror/language": "^6.10.2",
-    "@codemirror/legacy-modes": "^6.4.0",
-    "@codemirror/state": "^6.4.1",
-    "@codemirror/view": "^6.28.2",
+    
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@heroicons/react": "^2.1.4",
@@ -21,15 +13,14 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "@theme-ui/mdx": "^0.16.2",
-    "@theme-ui/prism": "^0.16.2",
+    
     "ace-builds": "^1.35.0",
-    "axios": "^1.7.2",
-    "codemirror": "^6.0.1",
+    
     "firebase": "^10.12.2",
     "framer-motion": "^11.2.10",
     "install": "^0.13.0",
     "npm": "^10.8.1",
-    "prism-react-renderer": "^2.3.1",
+   
     "react": "^18.3.1",
     "react-ace": "^11.0.1",
     "react-dom": "^18.3.1",

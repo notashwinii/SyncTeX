@@ -12,8 +12,9 @@ const App = () => {
       <Routes>
         
         <Route path="/home/*" element={<Home />} /> 
+        
         <Route path="*" element={<Navigate to= {"/Home"} />} />
-
+        
         <Route path="/projects/*" element={<Projects />} />
         {/* <Route path="/editor/new" element={<Editorpg socket={socket}/>} /> */}
         <Route path="/editor/:projectId" element={<Editorpg socket={socket}/>} />

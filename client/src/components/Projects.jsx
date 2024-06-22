@@ -37,6 +37,7 @@ const Projects = () => {
     };
   }, []);
 
+//searching for projects
   useEffect(() => {
     const filtered = projects.filter((project) =>
       project.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,6 +45,7 @@ const Projects = () => {
     setFilteredProjects(filtered);
   }, [searchTerm, projects]);
 
+  
   const handleNewProject = () => {
     const newProjectId = uuidv4();
     socket.emit("createProject", newProjectId);

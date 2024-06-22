@@ -4,6 +4,7 @@ import { MdCheck, MdEdit, MdDownload, MdShare } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import CodeEditor from "./CodeEditor";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 const DialogBox = ({ projectId, onClose }) => {
   return (
@@ -92,59 +93,66 @@ const Editorpg = ({ socket }) => {
   };
 
   return (
-    <div className="w-screen h-screen bg-[#6da7af] flex flex-col items-start justify-start overflow-hidden">
-      <header className="w-full flex items-center justify-between px-12 py-4 h-12 bg-[#5b8c92]">
-        <div className="flex items-center justify-center gap-6">
+    <div className="w-screen h-screen bg-[#323639] flex flex-col items-start justify-start overflow-hidden">
+      <header className="w-full flex items-center justify-between px-12 py-4 h-12 bg-[#3c5e63] relative">
+        <Link to={"/projects"} className="flex items-center justify-center gap-6 absolute left-0">
           <img
             className="px-2 w-12 h-auto object-contain"
             src={"/assets/sync.svg"}
             alt="SyncTeX logo"
           />
-          <div className="flex flex-col items-start justify-start">
-            <div className="flex items-center justify-center gap-3">
-              <AnimatePresence>
-                {isTitle ? (
-                  <motion.input
-                    key={"TitleInput"}
-                    type="text"
-                    placeholder="Project Title"
-                    className="px-3 py-2 rounded-md bg-transparent text-primaryText text-base outline-none border-none"
-                    value={title}
-                    onChange={handleTitleChange}
-                  />
-                ) : (
-                  <motion.p
-                    key={"titleLabel"}
-                    className="px-3 py-2 text-white text-lg"
-                  >
-                    {title}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {isTitle ? (
-                  <motion.div
-                    key={"MdCheck"}
-                    className="cursor-pointer"
-                    onClick={() => setIsTitle(false)}
-                  >
-                    <MdCheck className="text-2xl text-[#F9EFD6]" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key={"MdEdit"}
-                    className="cursor-pointer text-[#F9EFD6]"
-                    onClick={() => setIsTitle(true)}
-                    style={{ fontSize: "20px" }}
-                  >
-                    <MdEdit />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
+        </Link>
+        <div className="flex items-center justify-center gap-3 mx-auto">
+          <AnimatePresence>
+            {isTitle ? (
+              <motion.input
+                key={"TitleInput"}
+                type="text"
+                placeholder="Project Title"
+                className="px-3 py-2 rounded-md bg-transparent text-primaryText text-base outline-none border-none"
+                value={title}
+                onChange={handleTitleChange}
+              />
+            ) : (
+              <motion.p
+                key={"titleLabel"}
+                className="px-3 py-2 text-white text-lg"
+              >
+                {title}
+              </motion.p>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {isTitle ? (
+              <motion.div
+                key={"MdCheck"}
+                className="cursor-pointer"
+                onClick={() => setIsTitle(false)}
+              >
+                <MdCheck className="text-2xl text-[#F9EFD6]" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={"MdEdit"}
+                className="cursor-pointer text-[#F9EFD6]"
+                onClick={() => setIsTitle(true)}
+                style={{ fontSize: "20px" }}
+              >
+                <MdEdit />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        <div className="flex items-center">
+
+
+
+{/* <div className="flex items-center justify-center px-3 -mt-2 gap-2 ">
+  <p className="text-white text text-sm">
+    {user?.displayName ? user?.displayName : `${user?.email.split("@")[0]}`}
+  </p>
+</div> */}
+
+        <div className="flex items-center absolute right-10">
           <div
             key="MdShare"
             className="cursor-pointer text-white hover:text-[#808285]"
@@ -162,27 +170,25 @@ const Editorpg = ({ socket }) => {
           style={{ paddingLeft: "20px" }}
           defaultSize={"50%"}
         >
-          <div className="flex flex-col h-screen">
-            <div className="bg-[#6da7af] p-1 h-10 flex items-center justify-between">
-            <h2 className="text-lg text-[#F9EFD6] font-semibold">
+          <div className="flex flex-col h-screen bg-[#323639]">
+            <div className="bg-[#323639] p-1 flex items-center justify-between" style={{height: '57px'}}>
+              <h2 className="text-lg text-[#F9EFD6] font-semibold">
                 Code Editor
               </h2>
-            <button
+              <button
                 onClick={handleCompileClick}
-                className="bg-white hover:bg-[#618487] h-7 flex items-center text-[#5b8c92] font-bold py-2 px-4 rounded-lg " 
+                className="bg-white hover:bg-[#618487] h-7 flex items-center text-[#5b8c92] font-bold py-2 px-4 rounded-lg "
                 style={{ fontSize: "18px" }}
               >
                 Compile
               </button>
-              
             </div>
-            <div className="flex-grow h-[calc(100dvh-5rem)]">
+            <div className="flex-grow h-[calc(100dvh-15rem)]">
               <CodeEditor onChange={onCodeChange} code={code} />
             </div>
           </div>
           <div className="flex flex-col h-screen">
-            
-            <div className="flex-grow w-full h-full">
+            <div className="flex-grow w-full h-screen">
               {pdfUrl && (
                 <iframe
                   src={pdfUrl}
@@ -194,7 +200,6 @@ const Editorpg = ({ socket }) => {
           </div>
         </SplitPane>
       </div>
-
       {showDialog && (
         <DialogBox projectId={projectId} onClose={handleCloseDialog} />
       )}
