@@ -1,68 +1,41 @@
 import React from "react";
-import { RiFilePdfLine, RiDeleteBin6Line } from "react-icons/ri"; // Importing icons from react-icons
+import { RiFilePdfLine, RiDeleteBin6Line } from "react-icons/ri";
 
 const ProjectList = ({ projects }) => {
   const handleOpenProject = (projectId) => {
-    // Logic to handle opening the project
     console.log(`Opening project ${projectId}`);
-    // Replace with actual logic to navigate to the project editor or details page
   };
 
   const handleDownloadPDF = (projectId) => {
-    // Logic to handle downloading PDF for the project
     console.log(`Downloading PDF for project ${projectId}`);
-    // Replace with actual logic to download PDF
   };
 
   const handleDeleteProject = (projectId) => {
-    // Logic to handle deleting the project
     console.log(`Deleting project ${projectId}`);
-    // Replace with actual logic to delete project
   };
 
   return (
-    <div className="mt-4">
+    <div className="overflow-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              S.No
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Title
             </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Owner
             </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Date Created
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Last Modified
             </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {projects.map((project, index) => (
+          {projects.map((project) => (
             <tr key={project.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {index + 1}
-              </td>
               <td
                 className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-pointer"
                 onClick={() => handleOpenProject(project.id)}
