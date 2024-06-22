@@ -1,2 +1,0 @@
-# SyncTex
-Collaborative LaTeX Editor

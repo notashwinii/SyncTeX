@@ -1,161 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <title>SyncTex | Login & Registration</title>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/assets/Sync.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
 
-<body>
-<div id="root">   
-    <div class="wrapper">
-        <div class="animation-container">
-            <div class="typing-text">
-                <span>\begin{anything}</span>
-            </div>
-        </div>
-        <nav class="nav">
-            <div class="nav-logo">
-                <img src="logo_SyncTeX.svg" alt="Logo">
-            </div>
-            <div class="nav-menu" id="navMenu">
-                <ul>
-                    <li><a href="#" class="link features-button">Features</a></li>
-                </ul>
-            </div>
-            <div class="nav-button">
-                <button class="btn white-btn" id="loginBtn" onclick="login()">Sign In</button>
-                <button class="btn" id="registerBtn" onclick="register()">Sign Up</button>
-            </div>
-            <div class="nav-menu-btn">
-                <i class="bx bx-menu" onclick="myMenuFunction()"></i>
-            </div>
-        </nav>
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
 
-        <div class="welcome-text">
-            <h1>Welcome to SyncTex</h1>
-            <p><span class="italic">Where LaTeX meets collaboration</span></p>
-        </div>
+    
+    <title>SyncTex</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
 
-        <!-- Form box -->
-        <form id="auth-form" class="form-box">
-            
-            <!-- Login form -->
-            <div class="login-container" id="login">
-                <div class="success-message">You have been logged in.</div>
-                <div class="error-message-login"></div>
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
 
-                <div class="top">
-                    <span>Don't have an account? <a href="#" onclick="register()">Sign Up</a></span>
-                    <header>Login</header>
-                </div>
-
-                <div class="input-box">
-                    <input type="text" id="login-email" class="input-field" placeholder="Username or Email">
-                    <i class="bx bx-user"></i>
-                </div>
-                <div class="input-box">
-                    <input type="password" id="login-password" class="input-field" placeholder="Password">
-                    <i class="bx bx-lock-alt"></i>
-                    <span class="toggle-password" onclick="togglePasswordVisibility('login-password')">
-                        <i class="bx bx-hide"></i>
-                    </span>
-                </div>
-                <div class="input-box">
-                    <button type="button" class="login-submit" onclick="handleLogin()">Sign In</button>
-                </div>
-                <div class="two-col">
-                    <div class="one">
-                        <input type="checkbox" id="login-check">
-                        <label for="login-check"> Remember Me</label>
-                    </div>
-                    <div class="two">
-                        <label><a href="#">Forgot password?</a></label>
-                    </div>
-                </div>
-
-                <div class="google-container">
-                    <a href="#">
-                        <div class="g-sign-in-button">
-                            <div class="content-wrapper">
-                                <div class="logo-wrapper">
-                                    <img src="https://developers.google.com/identity/images/g-logo.png">
-                                </div>
-                                <span class="text-container">
-                                    <span>Continue with Google</span>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Registration form -->
-            <div class="register-container" id="register">
-                <div class="register-message">Your account has been registered.</div>
-                <div class="error-message"></div>
-
-                <div class="top">
-                    <span>Have an account? <a href="#" onclick="login()">Login</a></span>
-                    <header>Sign Up</header>
-                </div>
-                <div class="two-forms">
-                    <div class="input-box">
-                        <input type="text" id="first-name" class="input-field" placeholder="Firstname">
-                        <i class="bx bx-user"></i>
-                    </div>
-                    <div class="input-box">
-                        <input type="text" id="last-name" class="input-field" placeholder="Lastname">
-                        <i class="bx bx-user"></i>
-                    </div>
-                </div>
-                <div class="input-box">
-                    <input type="text" id="register-email" class="input-field" placeholder="Email">
-                    <i class="bx bx-envelope"></i>
-                </div>
-                <div class="input-box">
-                    <input type="password" id="register-password" class="input-field" placeholder="Password">
-                    <i class="bx bx-lock-alt"></i>
-                    <span class="toggle-password" onclick="togglePasswordVisibility('register-password')">
-                        <i class="bx bx-hide"></i>
-                    </span>
-                </div>
-                <div class="input-box">
-                    <button type="button" class="submit" onclick="handleRegistration()">Sign Up</button>
-                </div>
-                <div class="two-col">
-                    <div class="one">
-                        <input type="checkbox" id="register-check">
-                        <label for="register-check"> Remember Me</label>
-                    </div>
-                </div>
-
-                <div class="google-container">
-                    <a href="#">
-                        <button class="g-sign-in-button" id="google-signin-btn">
-                            <div class="content-wrapper">
-                                <div class="logo-wrapper">
-                                    <img src="https://developers.google.com/identity/images/g-logo.png">
-                                </div>
-                                <span class="text-container">
-                                    <span>Continue with Google</span>
-                                </span>
-                            </div>
-                        </button>
-                    </a>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script type="text/javascript" src="script.js"></script>
-</div> 
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
 </body>
 </html>
