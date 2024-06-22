@@ -3,6 +3,19 @@ const { Readable } = require("stream");
 const bodyParser = require("body-parser");
 const latex = require("node-latex");
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+const cors = require("cors")
+
+app.use(cors())
 
 app.use(bodyParser.json());
 
@@ -46,7 +59,20 @@ app.post("/api/compile-latex", (req, res) => {
   });
 });
 
+
+io.on("connection",(socket)=>{
+  console.log("Socket COnnected");
+  socket.on("connectTo",(data)=>{
+    socket.join(data.projectId)
+  })
+  socket.on("codeChange", (data)=>{
+    socket.to(data.projectId).emit("changedCode",data.code)
+  })
+})
+
+
+
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

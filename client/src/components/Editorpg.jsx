@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import SplitPane from "react-split-pane";
 import { MdCheck, MdEdit, MdDownload, MdShare } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import CodeEditor from "./CodeEditor";
+import { useParams } from "react-router";
 
 const DialogBox = ({ projectId, onClose }) => {
   return (
@@ -22,11 +23,13 @@ const DialogBox = ({ projectId, onClose }) => {
   );
 };
 
-const Editorpg = () => {
+const Editorpg = ({socket}) => {
+  const {projectId} = useParams()
   const [isTitle, setIsTitle] = useState(false);
   const [title, setTitle] = useState("Untitled");
   const [showDialog, setShowDialog] = useState(false);
-  const projectId = "ABC123"; // Replace with actual project ID logic
+
+  const [code,setCode] = useState("")
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -39,6 +42,28 @@ const Editorpg = () => {
   const handleCloseDialog = () => {
     setShowDialog(false);
   };
+
+  useEffect(()=>{
+    socket.on("connect",data=>{
+      console.log("Socket Connected");
+    })
+
+    socket.emit("connectTo",{
+      projectId:projectId
+    })
+  },[])
+
+  useEffect(()=>{
+    socket.on("changedCode",data=>{
+      console.log(data);
+      setCode(data)
+    })
+  },[socket])
+
+  const onCodeChange=(val)=>{
+    setCode(val)
+    socket.emit("codeChange",{projectId:projectId,code:val})
+  }
 
   return (
     <div className="w-screen h-screen bg-[#6da7af] flex flex-col items-start justify-start overflow-hidden">
@@ -118,13 +143,13 @@ const Editorpg = () => {
               </h2>
             </div>
             <div className="flex-grow h-[calc(100dvh-5rem)]">
-              <CodeEditor />
+              <CodeEditor onChange={onCodeChange} code={code}/>
             </div>
           </div>
           <div className="flex flex-col">
             <header className="bg-[#6da7af] p-1 h-10 flex items-center">
               <button
-                className="bg-white hover:bg-[#618487] h-7 flex items-center text-[#5b8c92] font-bold py-2 px-4 rounded-full"
+                className="bg-white hover:bg-[#618487] h-7 flex items-center text-[#5b8c92] font-bold py-2 px-4 rounded-lg"
                 style={{ fontSize: "18px" }}
               >
                 Compile

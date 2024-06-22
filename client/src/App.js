@@ -1,9 +1,12 @@
 import React from "react";
 import {Navigate, Routes, Route } from "react-router-dom";
 import {Home, Projects, Editorpg} from "./components"; 
+import {io} from 'socket.io-client'
  
 
 const App = () => {
+  const socket = io("http://localhost:3001");
+
   return (
     <div className='w-screen h-screen overflow-hidden'>
       <Routes>
@@ -12,8 +15,8 @@ const App = () => {
         <Route path="*" element={<Navigate to= {"/Home"} />} />
 
         <Route path="/projects/*" element={<Projects />} />
-        <Route path="/editor/new" element={<Editorpg />} />
-        <Route path="/editor/:projectId" element={<Editorpg />} />
+        {/* <Route path="/editor/new" element={<Editorpg socket={socket}/>} /> */}
+        <Route path="/editor/:projectId" element={<Editorpg socket={socket}/>} />
       </Routes>
     </div>
   );

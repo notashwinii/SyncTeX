@@ -1,10 +1,13 @@
 import React from "react";
 import { RiFilePdfLine, RiDeleteBin6Line } from "react-icons/ri"; // Importing icons from react-icons
+import { useNavigate } from "react-router";
 
 const ProjectList = ({ projects }) => {
+  const naviagte = useNavigate()
   const handleOpenProject = (projectId) => {
     // Logic to handle opening the project
     console.log(`Opening project ${projectId}`);
+    naviagte(`/editor/${projectId}`)
     // Replace with actual logic to navigate to the project editor or details page
   };
 
