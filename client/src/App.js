@@ -1,37 +1,17 @@
-import React, { useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
-import Editpg  from "./components/Editpg";
-
-
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import {Home, Projects, Editorpg} from "./components"; 
+ 
 
 const App = () => {
-  const [editorValue, setEditorValue] = useState("");
-
   return (
-    <div className="w-screen h-screen items-start justify-start overflow-hidden">
+    <div className='w-screen h-screen overflow-hidden'>
       <Routes>
-       
-        <Route path="/Editpg/*" element={<Editpg />} />
-        <Route path="/login/*" element={<ExternalPage page="login/index.html" />} />
-        <Route path="/landing-page/*" element={<ExternalPage page="landing-page/index.html" />} />
-
-        
-        
-       
+        <Route path="/home/*" element={<Home />} /> 
+        <Route path="/projects/*" element={<Projects />} />
+        <Route path="/editor/new" element={<Editorpg />} />
+        <Route path="/editor/:projectId" element={<Editorpg />} />
       </Routes>
-    </div>
-  );
-};
-
-const ExternalPage = ({ page }) => {
-  return (
-    <div className="w-screen h-screen">
-      <iframe
-        src={`/${page}`}
-        width="100%"
-        height="100%"
-        title="External HTML Page"
-      />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-export {default as Home} from "../pages/Home";
-
-export {default as Editpg} from "/Editpg";
-
+export {default as Home} from "./Home";
+export {default as Projects} from "./Projects";
+export {default as Editorpg} from "./Editorpg";

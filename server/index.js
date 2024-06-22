@@ -1,21 +1,27 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const cors = require('cors');
-const { v4: uuidv4 } = require('uuid');
+// {{const express = require("express");
+// const http = require("http");
+// const app = express();
+// const server = http.createServer(app);
+// const socket = require("socket.io");
+// const io = socket(server);
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// let users = [];
 
-const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: 'http://localhost:3000',
-        methods: ['GET', 'POST'],
-    },
-});
+// io.on('connection', (socket) => {
+//     socket.on("join server", (username) => {
+//         const user = {
+//             username,
+//             id: socket.id,
+//         };
+//         users.push(user);
+//         io.emit("new user", users);
+//     });
+//     socket.on("join room", (roomName, cb) => {
+//         socket.join(roomName);
+//         cb(messages[roomName]);
+        
+//     });
+   
+// });
 
-server.listen(3001, () => {
-    console.log('Server is running on port 3001');
-});
+// server.listen(1337, () => console.log("Server running on port 1337"));}}
