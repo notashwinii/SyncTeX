@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import SplitPane from "react-split-pane";
 import { MdCheck, MdEdit, MdDownload, MdShare } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,13 +23,13 @@ const DialogBox = ({ projectId, onClose }) => {
   );
 };
 
-const Editorpg = ({socket}) => {
-  const {projectId} = useParams()
+const Editorpg = ({ socket }) => {
+  const { projectId } = useParams();
   const [isTitle, setIsTitle] = useState(false);
   const [title, setTitle] = useState("Untitled");
   const [showDialog, setShowDialog] = useState(false);
-
-  const [code,setCode] = useState("")
+  const [code, setCode] = useState("");
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -43,27 +43,53 @@ const Editorpg = ({socket}) => {
     setShowDialog(false);
   };
 
-  useEffect(()=>{
-    socket.on("connect",data=>{
+  useEffect(() => {
+    socket.on("connect", (data) => {
       console.log("Socket Connected");
-    })
+    });
 
-    socket.emit("connectTo",{
-      projectId:projectId
-    })
-  },[])
+    socket.emit("connectTo", {
+      projectId: projectId,
+    });
+  }, []);
 
-  useEffect(()=>{
-    socket.on("changedCode",data=>{
+  useEffect(() => {
+    socket.on("changedCode", (data) => {
       console.log(data);
-      setCode(data)
-    })
-  },[socket])
+      setCode(data);
+    });
+  }, [socket]);
 
-  const onCodeChange=(val)=>{
-    setCode(val)
-    socket.emit("codeChange",{projectId:projectId,code:val})
-  }
+  const onCodeChange = (val) => {
+    setCode(val);
+    socket.emit("codeChange", { projectId: projectId, code: val });
+  };
+
+  const handleCompileClick = async () => {
+    console.log("Compile button clicked");
+    try {
+      const response = await fetch("http://localhost:3001/api/compile-latex", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: code }),
+      });
+
+      console.log("Server response:", response);
+
+      if (!response.ok) {
+        throw new Error("Failed to compile LaTeX");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+      console.log("PDF URL set:", url);
+    } catch (error) {
+      console.error("Error compiling LaTeX:", error);
+    }
+  };
 
   return (
     <div className="w-screen h-screen bg-[#6da7af] flex flex-col items-start justify-start overflow-hidden">
@@ -143,12 +169,13 @@ const Editorpg = ({socket}) => {
               </h2>
             </div>
             <div className="flex-grow h-[calc(100dvh-5rem)]">
-              <CodeEditor onChange={onCodeChange} code={code}/>
+              <CodeEditor onChange={onCodeChange} code={code} />
             </div>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col h-screen">
             <header className="bg-[#6da7af] p-1 h-10 flex items-center">
               <button
+                onClick={handleCompileClick}
                 className="bg-white hover:bg-[#618487] h-7 flex items-center text-[#5b8c92] font-bold py-2 px-4 rounded-lg"
                 style={{ fontSize: "18px" }}
               >
@@ -161,7 +188,15 @@ const Editorpg = ({socket}) => {
                 <MdDownload />
               </div>
             </header>
-            <div className="w-full h-full"></div>
+            <div className="flex-grow w-full h-full">
+              {pdfUrl && (
+                <iframe
+                  src={pdfUrl}
+                  title="PDF Preview"
+                  className="w-full h-full border-none"
+                />
+              )}
+            </div>
           </div>
         </SplitPane>
       </div>

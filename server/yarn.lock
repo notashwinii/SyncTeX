@@ -1078,7 +1078,7 @@ path-to-regexp@0.1.7:
 
 pdflatex@^0.0.1:
   version "0.0.1"
-  resolved "https://registry.yarnpkg.com/pdflatex/-/pdflatex-0.0.1.tgz#00d244d021863d7f3bfd58ffc263ed23f85f1f7f"
+  resolved "https://registry.npmjs.org/pdflatex/-/pdflatex-0.0.1.tgz"
   integrity sha512-KR2VBXWa6787szFEXiunxaa6qDAOOztCjlExLsqfd+MnhS120oZfgTo79k2nUw+zH+NqIUeVKPuuOGzyWQiTiA==
 
 picomatch@^2.0.4, picomatch@^2.2.1:
@@ -1470,6 +1470,11 @@ xtend@~4.0.1:
   version "4.0.2"
   resolved "https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
+
+yarn@^1.22.22:
+  version "1.22.22"
+  resolved "https://registry.npmjs.org/yarn/-/yarn-1.22.22.tgz"
+  integrity sha512-prL3kGtyG7o9Z9Sv8IPfBNrWTDmXB4Qbes8A9rEzt6wkJV8mUvoirjU0Mp3GGAU06Y0XQyA3/2/RQFVuK7MTfg==
 
 yocto-queue@^0.1.0:
   version "0.1.0"

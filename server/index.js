@@ -21,6 +21,7 @@ app.use(bodyParser.json());
 
 app.post("/api/compile-latex", (req, res) => {
   const latexContent = req.body.content;
+  console.log("Received LaTeX content:", latexContent); // Log received content
 
   if (!latexContent) {
     return res.status(400).send("LaTeX content is required");
@@ -45,6 +46,7 @@ app.post("/api/compile-latex", (req, res) => {
 
   output.on("end", () => {
     const pdfBuffer = Buffer.concat(chunks);
+    console.log("LaTeX compilation successful, sending PDF");
     res.writeHead(200, {
       "Content-Type": "application/pdf",
       "Content-Disposition": "attachment; filename=document.pdf",
