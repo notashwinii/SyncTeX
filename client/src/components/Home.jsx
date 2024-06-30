@@ -6,7 +6,7 @@ import './home.css';
 
 const Home = () => {
     const [isLogin, setIsLogin] = useState(true);
-    const navigate = useNavigate(); // Access the navigate function
+    const navigate = useNavigate(); 
 
     const googleSignIn = () => {
         const provider = new GoogleAuthProvider();
@@ -15,13 +15,10 @@ const Home = () => {
             .then((result) => {
                 const user = result.user;
                 console.log("User signed in: ", user);
-
-                // Redirect to projects page after successful sign-in
                 navigate('/projects');
             })
             .catch((error) => {
                 console.error("Error during Google sign-in: ", error);
-                // Handle errors, e.g., display error message
             });
     };
 
@@ -46,16 +43,12 @@ const Home = () => {
     
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Signed in
                 const user = userCredential.user;
                 console.log('User logged in:', user);
-    
-                // Redirect or perform other actions upon successful login
                 navigate('/projects');
             })
             .catch((error) => {
                 console.error('Error signing in:', error.message);
-                // Display error message to the user, e.g., set state for error message display
             });
     };
     
@@ -66,16 +59,11 @@ const Home = () => {
     
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Signed up
                 const user = userCredential.user;
                 console.log('User registered:', user);
-    
-                // Display success message or handle next steps after registration
-                // For example, you could navigate to a different page or display a success message
             })
             .catch((error) => {
                 console.error('Error registering:', error.message);
-                // Display error message to the user, e.g., set state for error message display
             });
     };
     
@@ -83,27 +71,38 @@ const Home = () => {
 
     return (
         <div className="min-h-screen flex flex-col items-center bg-white">
-            
-            <nav  className="fixed top-0 left-0 right-0 w-full flex justify-between items-center h-20 px-5 bg-light-blue shadow-lg z-50">
-                <div className="nav-logo">
-                    <img src={"/assets/synctex.svg"} alt="Logo" className="w-36 h-auto" />
-                </div>
-                
-                <div className="hidden md:flex space-x-6">
-                    <button className={`btn ${isLogin ?  'bg-white': 'bg-teal-600'}`} onClick={() => setIsLogin(true)}>Sign In</button>
-                    <button className={`btn ${isLogin ? 'bg-white' : 'bg-teal-600'}`} onClick={() => setIsLogin(false)}>Sign Up</button>
-                </div>
-                <div className="md:hidden">
-                    <i className="bx bx-menu text-2xl text-white"></i>
-                </div>
-            </nav>
+             <header className="w-full flex items-center justify-between px-12 py-4 h-19 relative"></header>
 
-            <div className="flex flex-col items-center mt-32">
+             <nav  className="fixed top-0 left-0 right-0 w-full flex justify-between items-center h-20 px-5 bg-[#A3D0D6] shadow-lg z-50">
+    <div className="nav-logo">
+        <img src={"/assets/synctex.svg"} alt="Logo" className="w-36 h-auto" />
+    </div>
+    
+    <div className="hidden md:flex space-x-6">
+        <button 
+            className={`btn ${isLogin ?  'bg-white' : 'bg-teal-600'} px-4 py-2 rounded-full hover:bg-teal-700 hover:text-white transition duration-300`}
+            onClick={() => setIsLogin(true)}
+        >
+            Sign In
+        </button>
+        <button 
+            className={`btn ${isLogin ? 'bg-white' : 'bg-teal-600'} px-4 py-2 rounded-full hover:bg-teal-700 hover:text-white transition duration-300`}
+            onClick={() => setIsLogin(false)}
+        >
+            Sign Up
+        </button>
+    </div>
+    <div className="md:hidden">
+        <i className="bx bx-menu text-2xl text-white"></i>
+    </div>
+</nav>
+
+            <div className="flex flex-col items-center mt-20">
                 <h1 className="text-4xl font-bold text-black">Welcome to SyncTex</h1>
                 <p className="text-xl text-gray-900 italic mt-2">Where LaTeX meets collaboration</p>
             </div>
 
-            <div className="form-box mt-10 bg-gray-300 p-8 rounded-2xl ">
+            <div className="form-box mt-8 bg-gray-300 p-8 rounded-2xl ">
                 {isLogin ? (
                     <div className="login-container">
                         <div className="success-message hidden">You have been logged in.</div>

@@ -100,13 +100,13 @@ const Projects = () => {
         <div className="flex flex-col w-full border-r bg-white p-6">
           <Link
             to="/editor/new"
-            className="bg-[#007bff] hover:bg-[#0056b3] h-12 flex items-center justify-center text-white font-bold py-2 px-4 rounded-lg mb-4"
+            className="bg-[#00A79D] hover:bg-[#0056b3] h-12 flex items-center justify-center text-white font-bold py-2 px-4 rounded-lg mb-4"
             onClick={handleNewProject}
           >
             New Project
           </Link>
           <button
-            className="bg-[#007bff] hover:bg-[#0056b3] h-12 flex items-center justify-center text-white font-bold py-2 px-4 rounded-lg"
+            className="bg-[#00A79D] hover:bg-[#00A79D] h-12 flex items-center justify-center text-white font-bold py-2 px-4 rounded-lg"
             onClick={handleJoinProject}
           >
             Join Project
