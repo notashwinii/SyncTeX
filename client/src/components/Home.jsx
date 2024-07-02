@@ -3,7 +3,7 @@ import { auth } from './firebase';
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaLock, FaEye, FaEyeSlash, FaEnvelope } from 'react-icons/fa';
-import './home.css';
+//import './home.css';
 
 const Home = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -141,7 +141,7 @@ const Home = () => {
         ) : (
           <div className="register-container">
             <div className="text-center">
-              <span>Have an account? <a href="#" onClick={() => setIsLogin(true)}>Login</a></span>
+              <span>Have an account? <a href="#" onClick={() => setIsLogin(true)}><u>Login</u></a></span>
               <h2 className="text-teal-600 text-2xl font-semibold mt-4">Sign Up</h2>
             </div>
             <div className="flex space-x-4 mt-6">

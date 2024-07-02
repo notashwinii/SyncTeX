@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-
+/*
 .form-box {
     background-color: #d3d3d3;
     position: relative;
@@ -11,6 +11,7 @@
     border-radius: 40px;
     margin-top: 20px; 
 }
+/*
 .wrapper{
     background-color: white;
     display: flex;
@@ -155,6 +156,8 @@ header{
 .two label a:hover{
     text-decoration: underline;
 }
+/*
+
 @media only screen and (max-width: 786px){
     .nav-button{
         display: none;
@@ -237,7 +240,7 @@ header{
   .g-sign-in-button:hover {
     cursor: pointer;
     /*-webkit-box-shadow: 0 0 3px 3px #0fc1c1b3;
-    box-shadow: 0 0 3px 3px #0fc1c1b3;*/
+    box-shadow: 0 0 3px 3px #0fc1c1b3;
     background-color: rgba(16, 174, 165, 1);
 
   }
@@ -356,6 +359,5 @@ header{
     margin-top: 3px;
     border-radius: 30px;
     color: white;
-
-    
 }
+*/

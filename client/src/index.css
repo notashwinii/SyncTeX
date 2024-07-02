@@ -156,7 +156,7 @@
  
 }
 
-
+/*
 .login-container{
     position: absolute;
     left: 4px;
@@ -173,6 +173,7 @@
     flex-direction: column;
     transition: .5s ease-in-out;
 }
+    */
 .top span{
     color: #000000;
     font-size: small;
@@ -315,6 +316,8 @@ header{
         background: rgba(255, 255, 255, 0.15);
     }
 }
+
+/*
 @media only screen and (max-width: 540px) {
     .wrapper{
         min-height: 100vh;
@@ -332,6 +335,7 @@ header{
         gap: 0;
     }
 }
+*/
 
 .google-container {
     padding: auto;
@@ -341,7 +345,7 @@ header{
   .g-sign-in-button {
     position: relative;
 
-    top: 450%;
+    top: 40%;
     left: 48%;
 
     transform: translate(-50%, -50%);
@@ -358,8 +362,7 @@ header{
 
   .g-sign-in-button:hover {
     cursor: pointer;
-    /*-webkit-box-shadow: 0 0 3px 3px #0fc1c1b3;
-    box-shadow: 0 0 3px 3px #0fc1c1b3;*/
+
     background-color: rgba(16, 174, 165, 1);
 
   }
@@ -509,7 +512,7 @@ h1, h2, h3 {
 header {
     
     color: var(--black);
-    padding: 10px 0;
+    padding: 9px 0;
     height: var(--header-height);
 }
 
