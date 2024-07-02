@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@heroicons/react": "^2.1.4",
@@ -13,14 +12,11 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "@theme-ui/mdx": "^0.16.2",
-    
     "ace-builds": "^1.35.0",
-    
     "firebase": "^10.12.2",
     "framer-motion": "^11.2.10",
     "install": "^0.13.0",
     "npm": "^10.8.1",
-   
     "react": "^18.3.1",
     "react-ace": "^11.0.1",
     "react-dom": "^18.3.1",
