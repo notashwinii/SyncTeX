@@ -95,7 +95,7 @@ const Home = () => {
         <p className="text-xl text-gray-900 italic mt-2">Where LaTeX meets collaboration</p>
       </div>
 
-      <div className="form-box mt-8 bg-gray-300 p-8 rounded-2xl">
+      <div className="form-box mt-8 bg-gray-300 p-8 rounded-9xl">
         {isLogin ? (
           <div className="login-container">
             <div className="text-center">
