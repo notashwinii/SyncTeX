@@ -14,7 +14,7 @@ const CodeEditor = ({ onChange, code }) => {
       value={code}
       name="RandomName"
       editorProps={{ $blockScrolling: true }}
-      style={{ height: "93%", width: "calc(100% - 20px)" }}
+      style={{ width: "calc(100% - 20px)" }}
       setOptions={{
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,

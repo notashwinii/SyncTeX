@@ -93,7 +93,7 @@ const Editorpg = ({ socket }) => {
   };
 
   return (
-    <div className="w-screen h-screen bg-[#323639] flex flex-col items-start justify-start overflow-hidden">
+    <div className="w-screen h-full bg-[#323639] flex flex-col items-start justify-start overflow-hidden">
       <header className="w-full flex items-center justify-between px-12 py-4 h-12 bg-[#3c5e63] relative">
         <Link to={"/projects"} className="flex items-center justify-center gap-6 absolute left-0">
           <img
@@ -162,15 +162,15 @@ const Editorpg = ({ socket }) => {
           </div>
         </div>
       </header>
-      <div className="w-full h-full flex flex-grow overflow-hidden">
+      <div className="w-full h-full flex flex-grow ">
         <SplitPane
           split="vertical"
           minSize={100}
-          max={-100}
+          
           style={{ paddingLeft: "20px" }}
           defaultSize={"50%"}
         >
-          <div className="flex flex-col h-screen bg-[#323639]">
+          <div className="flex flex-col h-full bg-[#323639]">
             <div className="bg-[#323639] p-1 flex items-center justify-between" style={{height: '57px'}}>
               <h2 className="text-lg text-[#F9EFD6] font-semibold">
                 Code Editor
@@ -183,12 +183,12 @@ const Editorpg = ({ socket }) => {
                 Compile
               </button>
             </div>
-            <div className="flex-grow h-[calc(100dvh-15rem)]">
+            <div className="flex-grow h-full">
               <CodeEditor onChange={onCodeChange} code={code} />
             </div>
           </div>
-          <div className="flex flex-col h-screen">
-            <div className="flex-grow w-full h-screen">
+          
+            <div className="flex-grow w-full h-full">
               {pdfUrl && (
                 <iframe
                   src={pdfUrl}
@@ -197,7 +197,7 @@ const Editorpg = ({ socket }) => {
                 />
               )}
             </div>
-          </div>
+          
         </SplitPane>
       </div>
       {showDialog && (

@@ -161,6 +161,11 @@ const Home = () => {
                     </span>
                   </div>
                 </button>
+                {error && (
+          <div className="text-red-600 text-sm mt-4 justify-center">
+            {error}
+          </div>
+        )}
               </div>
               
             </div>
@@ -219,6 +224,11 @@ const Home = () => {
                     </span>
                   </div>
                 </button>
+                {error && (
+          <div className="text-red-600 text-sm mt-4 justify-center">
+            {error}
+          </div>
+        )}
               </div>
               
             </div>
