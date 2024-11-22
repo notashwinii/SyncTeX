@@ -7,6 +7,9 @@ import { FaUser, FaLock, FaEye, FaEyeSlash, FaEnvelope } from 'react-icons/fa';
 const Home = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setlastName] = useState('');
+
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
@@ -73,172 +76,302 @@ const Home = () => {
   };
 
   return (
-    <div className="max-h-screen overflow-auto">
-      <div className="min-h-screen flex flex-col items-center bg-white">
-        <header className="w-full flex items-center justify-between px-12 py-4 h-19 relative"></header>
-
-        <nav className="fixed top-0 left-0 right-0 w-full flex justify-between items-center h-20 px-5 bg-[#A3D0D6] shadow-lg z-50">
-          <div className="nav-logo">
-            <img src={"/assets/synctex.svg"} alt="Logo" className="w-36 h-auto" />
-          </div>
-
-          <div className="hidden md:flex space-x-6">
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#A3D0D6] shadow-lg">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <img
+            src="/assets/synctex.svg"
+            alt="SyncTex Logo"
+            className="w-36 h-auto"
+          />
+          <div className="hidden md:flex space-x-4">
             <button
-              className={`btn ${isLogin ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'} px-4 py-2 rounded-full hover:bg-teal-700 hover:text-white transition duration-300`}
               onClick={() => setIsLogin(true)}
+              className={`px-6 py-2 rounded-full transition-colors duration-300 ${isLogin
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-teal-600 hover:bg-teal-50'
+                }`}
             >
               Sign In
             </button>
             <button
-              className={`btn ${isLogin ? 'bg-white text-teal-600' : 'bg-teal-600 text-white'} px-4 py-2 rounded-full hover:bg-teal-700 hover:text-white transition duration-300`}
               onClick={() => setIsLogin(false)}
+              className={`px-6 py-2 rounded-full transition-colors duration-300 ${!isLogin
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-teal-600 hover:bg-teal-50'
+                }`}
             >
               Sign Up
             </button>
           </div>
-          <div className="md:hidden">
-            <i className="bx bx-menu text-2xl text-white"></i>
-          </div>
-        </nav>
+        </div>
+      </nav>
 
-        <div className="flex flex-col items-center mt-20">
-          <h1 className="text-4xl font-bold text-black">Welcome to SyncTex</h1>
-          <p className="text-xl text-gray-900 italic mt-2">Where LaTeX meets collaboration</p>
+      {/* Content */}
+      <div className="container mx-auto px-4 flex-grow flex flex-col justify-center items-center pt-24">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Welcome to SyncTex
+          </h1>
+          <p className="text-xl text-gray-600 italic">
+            Where LaTeX meets collaboration
+          </p>
         </div>
 
-        <div className="form-box mt-8 bg-gray-300 p-8 rounded-9xl">
+        <div className="w-full max-w-md bg-gray-100 rounded-xl shadow-lg p-8">
           {isLogin ? (
-            <div className="login-container">
-              <div className="text-center">
-                <span>Don't have an account? <a href="#" onClick={() => setIsLogin(false)}><u>Sign Up</u></a></span>
-                <h2 className="text-teal-600 text-2xl font-semibold mt-4">Login</h2>
-              </div>
-              <div className="mt-6 relative">
-                <input
-                  type="text"
-                  id="login-email"
-                  className="input-field mt-2"
-                  placeholder="Username or Email"
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                />
-                <FaUser className="absolute left-3 top-4 text-gray-600" />
-              </div>
-              <div className="mt-4 relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="login-password"
-                  className="input-field mt-2"
-                  placeholder="Password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                />
-                <FaLock className="absolute left-3 top-4 text-gray-600" />
-                <span className="toggle-password absolute right-3 top-4 cursor-pointer" onClick={togglePasswordVisibility}>
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-              </div>
-              <div className="mt-4">
-                <button type="button" className="btn login-submit w-full" onClick={handleLogin}>Sign In</button>
-              </div>
-              <div className="flex justify-between items-center mt-4">
-                <div className="flex items-center">
-                  <input type="checkbox" id="login-check" />
-                  <label htmlFor="login-check" className="ml-2 text-black"> Remember Me</label>
-                </div>
-                <div>
-                  <label><a href="#" className="text-black">Forgot password?</a></label>
-                </div>
-              </div>
-              <div className="google-container mt-6">
-                <button className="g-sign-in-button w-full" onClick={googleSignIn}>
-                  <div className="content-wrapper">
-                    <div className="logo-wrapper">
-                      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" />
-                    </div>
-                    <span className="text-container">
-                      <span>Continue with Google</span>
-                    </span>
-                  </div>
-                </button>
-                {error && (
-          <div className="text-red-600 text-sm mt-4 justify-center">
-            {error}
-          </div>
-        )}
-              </div>
-              
-            </div>
+            <LoginForm
+              loginEmail={loginEmail}
+              setLoginEmail={setLoginEmail}
+              loginPassword={loginPassword}
+              setLoginPassword={setLoginPassword}
+              handleLogin={handleLogin}
+              googleSignIn={googleSignIn}
+              togglePasswordVisibility={togglePasswordVisibility}
+              showPassword={showPassword}
+              error={error}
+              setIsLogin={setIsLogin}
+            />
           ) : (
-            <div className="register-container">
-              <div className="text-center">
-                <span>Have an account? <a href="#" onClick={() => setIsLogin(true)}><u>Login</u></a></span>
-                <h2 className="text-teal-600 text-2xl font-semibold mt-4">Sign Up</h2>
-              </div>
-              <div className="flex space-x-4 mt-6">
-                <div className="relative">
-                  <input type="text" id="first-name" className="input-field mt-2" placeholder="Firstname" />
-                  <FaUser className="absolute left-3 top-4 text-gray-600" />
-                </div>
-                <div className="relative">
-                  <input type="text" id="last-name" className="input-field mt-2" placeholder="Lastname" />
-                  <FaUser className="absolute left-3 top-4 text-gray-600" />
-                </div>
-              </div>
-              <div className="mt-4 relative">
-                <input
-                  type="text"
-                  id="register-email"
-                  className="input-field mt-2"
-                  placeholder="Email"
-                  value={registerEmail}
-                  onChange={(e) => setRegisterEmail(e.target.value)}
-                />
-                <FaEnvelope className="absolute left-3 top-4 text-gray-600" />
-              </div>
-              <div className="mt-4 relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="register-password"
-                  className="input-field mt-2"
-                  placeholder="Password"
-                  value={registerPassword}
-                  onChange={(e) => setRegisterPassword(e.target.value)}
-                />
-                <FaLock className="absolute left-3 top-4 text-gray-600" />
-                <span className="toggle-password absolute right-3 top-4 cursor-pointer" onClick={togglePasswordVisibility}>
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-              </div>
-              <div className="mt-4">
-                <button type="button" className="btn submit w-full" onClick={handleRegistration}>Sign Up</button>
-              </div>
-              <div className="google-container mt-6">
-                <button className="g-sign-in-button w-full" onClick={googleSignIn}>
-                  <div className="content-wrapper">
-                    <div className="logo-wrapper">
-                      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" />
-                    </div>
-                    <span className="text-container">
-                      <span>Continue with Google</span>
-                    </span>
-                  </div>
-                </button>
-                {error && (
-          <div className="text-red-600 text-sm mt-4 justify-center">
-            {error}
-          </div>
-        )}
-              </div>
-              
-            </div>
+            <RegisterForm
+              firstName={firstName}
+              setFirstName={setFirstName}
+              lastName={lastName}
+              setlastName={setlastName}
+              registerEmail={registerEmail}
+              setRegisterEmail={setRegisterEmail}
+              registerPassword={registerPassword}
+              setRegisterPassword={setRegisterPassword}
+              handleRegistration={handleRegistration}
+              googleSignIn={googleSignIn}
+              togglePasswordVisibility={togglePasswordVisibility}
+              showPassword={showPassword}
+              error={error}
+              setIsLogin={setIsLogin}
+            />
           )}
-          
-          
         </div>
       </div>
     </div>
   );
 };
 
+const LoginForm = ({
+  loginEmail,
+  setLoginEmail,
+  loginPassword,
+  setLoginPassword,
+  handleLogin,
+  googleSignIn,
+  togglePasswordVisibility,
+  showPassword,
+  error,
+  setIsLogin
+}) => (
+  <>
+    <div className="text-center mb-6">
+      <p className="text-gray-600 mb-2">
+        Don't have an account?
+        <span
+          onClick={() => setIsLogin(false)}
+          className="text-teal-600 ml-1 cursor-pointer hover:underline"
+        >
+          Sign Up
+        </span>
+      </p>
+      <h2 className="text-2xl font-semibold text-teal-600">Login</h2>
+    </div>
+
+    <div className="space-y-4">
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Username or Email"
+          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          value={loginEmail}
+          onChange={(e) => setLoginEmail(e.target.value)}
+        />
+        <FaUser className="absolute left-3 top-3 text-gray-500" />
+      </div>
+
+      <div className="relative">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Password"
+          className="w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          value={loginPassword}
+          onChange={(e) => setLoginPassword(e.target.value)}
+        />
+        <FaLock className="absolute left-3 top-3 text-gray-500" />
+        <button
+          onClick={togglePasswordVisibility}
+          className="absolute right-3 top-3 text-gray-500"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </button>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            className="mr-2 text-teal-600 focus:ring-teal-500"
+          />
+          Remember Me
+        </label>
+        <a href="#" className="text-teal-600 hover:underline">
+          Forgot Password?
+        </a>
+      </div>
+
+      <button
+        onClick={handleLogin}
+        className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition-colors"
+      >
+        Sign In
+      </button>
+
+      <div className="flex items-center my-4">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="mx-4 text-gray-500">or</span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      <button
+        onClick={googleSignIn}
+        className="w-full flex items-center justify-center border border-gray-300 py-2 rounded-lg hover:bg-gray-50"
+      >
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="Google Logo"
+          className="w-6 h-6 mr-2"
+        />
+        Continue with Google
+      </button>
+
+      {error && (
+        <div className="text-red-600 text-sm text-center mt-4">
+          {error}
+        </div>
+      )}
+    </div>
+  </>
+);
+
+const RegisterForm = ({
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
+  registerEmail,
+  setRegisterEmail,
+  registerPassword,
+  setRegisterPassword,
+  handleRegistration,
+  googleSignIn,
+  togglePasswordVisibility,
+  showPassword,
+  error,
+  setIsLogin
+}) => (
+  <>
+    <div className="text-center mb-6">
+      <p className="text-gray-600 mb-2">
+        Already have an account?
+        <span
+          onClick={() => setIsLogin(true)}
+          className="text-teal-600 ml-1 cursor-pointer hover:underline"
+        >
+          Login
+        </span>
+      </p>
+      <h2 className="text-2xl font-semibold text-teal-600">Sign Up</h2>
+    </div>
+
+    <div className="space-y-4">
+      <div className="flex space-x-4">
+        <div className="relative w-1/2">
+          <input
+            type="text"
+            placeholder="First Name"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <FaUser className="absolute left-3 top-3 text-gray-500" />
+        </div>
+        <div className="relative w-1/2">
+          <input
+            type="text"
+            placeholder="Last Name"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          <FaUser className="absolute left-3 top-3 text-gray-500" />
+        </div>
+      </div>
+
+      <div className="relative">
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          value={registerEmail}
+          onChange={(e) => setRegisterEmail(e.target.value)}
+        />
+        <FaEnvelope className="absolute left-3 top-3 text-gray-500" />
+      </div>
+
+      <div className="relative">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Password"
+          className="w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          value={registerPassword}
+          onChange={(e) => setRegisterPassword(e.target.value)}
+        />
+        <FaLock className="absolute left-3 top-3 text-gray-500" />
+        <button
+          onClick={togglePasswordVisibility}
+          className="absolute right-3 top-3 text-gray-500"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </button>
+      </div>
+
+      <button
+        onClick={handleRegistration}
+        className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition-colors"
+      >
+        Sign Up
+      </button>
+
+      <div className="flex items-center my-4">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="mx-4 text-gray-500">or</span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      <button
+        onClick={googleSignIn}
+        className="w-full flex items-center justify-center border border-gray-300 py-2 rounded-lg hover:bg-gray-50"
+      >
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="Google Logo"
+          className="w-6 h-6 mr-2"
+        />
+        Continue with Google
+      </button>
+
+      {error && (
+        <div className="text-red-600 text-sm text-center mt-4">
+          {error}
+        </div>
+      )}
+    </div>
+  </>
+);
 export default Home;
