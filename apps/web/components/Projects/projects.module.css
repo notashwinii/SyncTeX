@@ -1,0 +1,132 @@
+/* Sidebar Styles */
+.newProjectBtn {
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-align: center;
+  margin: 0 24px 32px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  width: calc(100% - 48px);
+}
+
+.newProjectBtn:hover {
+  background-color: #0056b3;
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navItem {
+  font-size: 16px;
+  color: #555;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.navItem:hover {
+  background-color: #e9ecef;
+}
+
+.navItem.active {
+  background-color: #e9ecef;
+  color: #007bff;
+  border-left: 4px solid #007bff;
+  padding-left: 20px;
+}
+
+/* Search Bar Styles */
+.searchBar {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 32px;
+}
+
+/* Table Styles */
+.tableContainer {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+}
+
+.table td button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.table td button:hover {
+  background-color: #f8f9fa;
+}
+
+.actionBtn {
+  margin-right: 8px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionBtn:hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.actionBtn svg {
+  stroke: currentColor;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e9ecef;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

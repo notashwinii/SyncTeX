@@ -1,0 +1,235 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  min-height: 20px;
+  gap: 8px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px var(--shadow);
+  position: relative;
+  z-index: 10;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+}
+
+.projectInfo {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-family: var(--font-ui);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.projectInfo::before {
+  content: '📁';
+  font-size: 16px;
+}
+
+.currentFile {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 13px;
+  padding: 4px 8px;
+  background: var(--primary-color-alpha);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-color);
+  opacity: 0.8;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 2px var(--shadow);
+}
+
+.buttonGroup:hover {
+  box-shadow: 0 2px 4px var(--shadow-elevated);
+  border-color: var(--primary-color);
+}
+
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  white-space: nowrap;
+}
+
+.toolbarButton:hover {
+  background: var(--hover-background);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 4px var(--shadow);
+  transform: translateY(-1px);
+}
+
+.toolbarButton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px var(--shadow);
+}
+
+.toolbarButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.toolbarButton:disabled:hover {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Primary action styling */
+.toolbarButton.primary {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.toolbarButton.primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* Success state for feedback */
+.toolbarButton.success {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.toolbarButton.success:hover {
+  background: var(--success-color);
+  opacity: 0.9;
+}
+
+/* Loading state */
+.toolbarButton.loading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.toolbarButton.loading::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 4px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Status indicator */
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.statusIndicator.compiling {
+  background: var(--warning-background);
+  color: var(--warning-color);
+}
+
+.statusIndicator.compiled {
+  background: var(--success-background);
+  color: var(--success-color);
+}
+
+.statusIndicator.error {
+  background: var(--error-background);
+  color: var(--error-color);
+}
+
+.compileButton {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.compileButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: white;
+}
+
+.compileButton:disabled {
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  border-color: var(--border-color);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  
+  .leftSection {
+    justify-content: center;
+  }
+  
+  .rightSection {
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .buttonGroup {
+    border-right: none;
+  }
+  
+  .toolbarButton span {
+    display: none;
+  }
+  
+  .toolbarButton {
+    min-width: 40px;
+    justify-content: center;
+    padding: 8px;
+  }
+}

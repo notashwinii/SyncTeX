@@ -1,0 +1,456 @@
+/* Overleaf-style Auto-Pagination CSS */
+
+/* Document container */
+.latex-document-container {
+  background: #f5f5f5;
+  min-height: 100%;
+  padding: 20px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Pages container */
+.pages-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+/* Individual page wrapper */
+.page-wrapper {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  overflow: hidden;
+  max-width: calc(100% - 20px);
+}
+
+/* Scale pages to fit in narrow preview panels */
+@media screen and (max-width: 600px) {
+  .page-wrapper {
+    width: calc(100% - 20px);
+    height: auto;
+    min-height: calc((100% - 20px) * 1.414); /* Maintain A4 aspect ratio */
+  }
+  
+  .pages-container {
+    padding: 0 5px;
+  }
+}
+
+/* Page content area */
+.page-content {
+  width: 100%;
+  height: 100%;
+  padding: 25mm 20mm;
+  box-sizing: border-box;
+  
+  /* Typography matching LaTeX */
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.6;
+  color: #000;
+  
+  /* Prevent overflow */
+  overflow: hidden;
+}
+
+/* Page numbers */
+.page-number {
+  position: absolute;
+  bottom: 15mm;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 10pt;
+  color: #666;
+}
+
+/* Typography matching LaTeX defaults */
+.page-content h1 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 2em 0 1em 0;
+  color: #000;
+}
+
+.page-content h2 {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 1.5em 0 0.8em 0;
+  color: #000;
+}
+
+.page-content h3 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 1.3em 0 0.6em 0;
+  color: #000;
+}
+
+.page-content p {
+  margin: 1em 0;
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* Lists styling */
+.page-content ul {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.page-content ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.page-content li {
+  margin: 0.3em 0;
+  list-style-type: disc;
+}
+
+.page-content ol li {
+  list-style-type: decimal;
+}
+
+/* Math and equations */
+.page-content .equation-container {
+  text-align: center;
+  margin: 1.5em 0;
+  padding: 0.5em;
+}
+
+/* Title section styling */
+.page-content .title-section {
+  text-align: center;
+  margin-bottom: 3em;
+}
+
+.page-content .document-title {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+.page-content .document-author {
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+.page-content .document-date {
+  font-size: 1em;
+  font-style: italic;
+}
+
+/* Tables */
+.page-content table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+}
+
+.page-content table td,
+.page-content table th {
+  border: 1px solid #000;
+  padding: 0.3em 0.6em;
+  text-align: left;
+}
+
+.page-content table th {
+  font-weight: bold;
+}
+
+/* Print styles */
+@media print {
+  .latex-document-container {
+    background: white !important;
+    padding: 0 !important;
+  }
+  
+  .page-wrapper {
+    box-shadow: none !important;
+    margin: 0 !important;
+    page-break-after: always;
+  }
+  
+  .page-wrapper:last-child {
+    page-break-after: avoid;
+  }
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 800px) {
+  .page-wrapper {
+    width: 95vw !important;
+    height: auto !important;
+    min-height: calc(95vw * 1.414) !important; /* Maintain A4 aspect ratio */
+  }
+  
+  .page-content {
+    padding: 20px 15px !important;
+  }
+}
+
+/* Scale pages for narrow preview panels */
+@media screen and (max-width: 600px) {
+  .page-wrapper {
+    width: calc(100% - 10px) !important;
+    height: auto !important;
+    min-height: calc((100% - 10px) * 1.414) !important;
+    transform: scale(0.8);
+    transform-origin: top center;
+    margin-bottom: -20%;
+  }
+  
+  .pages-container {
+    padding: 0 5px;
+  }
+  
+  .latex-document-container {
+    padding: 10px 0;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .latex-document-container {
+    background: #1a1a1a;
+  }
+  
+  .page-wrapper {
+    background: white; /* Keep pages white even in dark mode */
+  }
+}
+
+/* Typography matching LaTeX defaults */
+.auto-paginated-content h1 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 2em 0 1em 0;
+  color: #000;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.auto-paginated-content h2 {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 1.5em 0 0.8em 0;
+  color: #000;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.auto-paginated-content h3 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 1.2em 0 0.6em 0;
+  color: #000;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.auto-paginated-content p {
+  margin: 0 0 1em 0;
+  text-align: justify;
+  hyphens: auto;
+  color: #000;
+  orphans: 2;
+  widows: 2;
+}
+
+.auto-paginated-content ul,
+.auto-paginated-content ol {
+  margin: 1em 0;
+  padding-left: 2em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.auto-paginated-content li {
+  margin-bottom: 0.25em;
+  color: #000;
+}
+
+.auto-paginated-content ul {
+  list-style-type: disc;
+}
+
+.auto-paginated-content ol {
+  list-style-type: decimal;
+}
+
+/* Math styling */
+.auto-paginated-content .math-display {
+  text-align: center;
+  margin: 1.5em 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.auto-paginated-content .math-inline {
+  font-style: italic;
+}
+
+/* Equation environments */
+.auto-paginated-content .equation-container {
+  text-align: center;
+  margin: 1.5em 0;
+  padding: 0.5em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Title section styling */
+.auto-paginated-content .title-section {
+  text-align: center;
+  margin-bottom: 3em;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+/* Prevent bad page breaks */
+.auto-paginated-content h1,
+.auto-paginated-content h2,
+.auto-paginated-content h3,
+.auto-paginated-content h4,
+.auto-paginated-content h5,
+.auto-paginated-content h6 {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+/* Tables */
+.auto-paginated-content table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  width: 100%;
+}
+
+.auto-paginated-content table td,
+.auto-paginated-content table th {
+  border: 1px solid #000;
+  padding: 0.3em 0.6em;
+  text-align: left;
+}
+
+.auto-paginated-content table th {
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+
+/* Figures */
+.auto-paginated-content .figure {
+  text-align: center;
+  margin: 1em 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.auto-paginated-content .figure img {
+  max-width: 100%;
+  height: auto;
+}
+
+.auto-paginated-content figcaption {
+  font-size: 0.9em;
+  margin-top: 0.5em;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Code blocks */
+.auto-paginated-content pre,
+.auto-paginated-content .verbatim {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  background-color: #f8f8f8;
+  padding: 0.5em;
+  margin: 1em 0;
+  border-left: 3px solid #ccc;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  overflow-x: auto;
+}
+
+.auto-paginated-content code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  background-color: #f0f0f0;
+  padding: 0.2em 0.3em;
+  border-radius: 2px;
+}
+
+/* Print styles */
+@media print {
+  .latex-document-container {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .auto-paginated-content {
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 20mm !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+  
+  /* Better page breaks for print */
+  .auto-paginated-content h1,
+  .auto-paginated-content h2,
+  .auto-paginated-content h3 {
+    page-break-after: avoid;
+  }
+  
+  .auto-paginated-content p,
+  .auto-paginated-content ul,
+  .auto-paginated-content ol,
+  .auto-paginated-content .equation-container {
+    page-break-inside: avoid;
+  }
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 800px) {
+  .auto-paginated-content {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    padding: 20px 15px !important;
+    margin: 10px auto !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .latex-document-container {
+    background: #1a1a1a;
+  }
+  
+  .auto-paginated-content {
+    background: white; /* Keep document white even in dark mode */
+    color: #000;
+  }
+}
+
+/* Smooth transitions */
+.auto-paginated-content {
+  transition: box-shadow 0.3s ease;
+}
+
+.auto-paginated-content:hover {
+  box-shadow: 0 0 20px rgba(0,0,0,0.15);
+}

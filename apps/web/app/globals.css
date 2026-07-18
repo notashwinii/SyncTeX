@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Light Mode - Soft Blue Pastels */
+  --background: #f3f7fe;
+  --bg-primary: #f3f7fe;
+  --bg-secondary: #e3edfc;
+  --bg-tertiary: #d8e5fa;
+  --card-background: #f7fafe;
+  --secondary-background: #e3edfc;
+  --hover-background: #dce8fb;
+  --input-background: #f7fafe;
+  --text-primary: #2d3e5f;
+  --text-secondary: #5a6b8a;
+  --text-tertiary: #8694af;
+  --border-color: #c8daf5;
+  --hover-bg: #dce8fb;
+  --shadow: rgba(70, 100, 150, 0.08);
+  
+  /* Blue Pastel Primary Colors */
+  --primary-color: #87b7f5;
+  --primary-hover: #6ba3f0;
+  --primary-color-alpha: rgba(135, 183, 245, 0.12);
+  --accent-primary: #87b7f5;
+  --accent-hover: #6ba3f0;
+  
+  /* Blue Pastel Accent Colors */
+  --accent-pink: #c5a5f5;
+  --accent-peach: #fdbaa5;
+  --accent-mint: #a5e7d8;
+  --accent-lavender: #b5c5f5;
+  --accent-sky: #a5d8f5;
+  
+  /* Error Colors */
+  --error-color: #f5878a;
+  --error-background: rgba(245, 135, 138, 0.12);
+}
+
+[data-theme='dark'] {
+  /* Dark Mode - Deep Blue Pastels */
+  --background: #151d2a;
+  --bg-primary: #151d2a;
+  --bg-secondary: #1d2635;
+  --bg-tertiary: #253040;
+  --card-background: #1a2332;
+  --secondary-background: #222d3d;
+  --hover-background: #2a3544;
+  --input-background: #1a2332;
+  --text-primary: #dce8f5;
+  --text-secondary: #b5cae0;
+  --text-tertiary: #8aa3c2;
+  --border-color: #334256;
+  --hover-bg: #2a3544;
+  --shadow: rgba(0, 0, 0, 0.4);
+  
+  /* Deep Blue Pastel Primary Colors */
+  --primary-color: #5a8ac9;
+  --primary-hover: #6a9dd9;
+  --primary-color-alpha: rgba(90, 138, 201, 0.15);
+  --accent-primary: #5a8ac9;
+  --accent-hover: #6a9dd9;
+  
+  /* Deep Pastel Accent Colors */
+  --accent-pink: #d5b5f5;
+  --accent-peach: #ffc8af;
+  --accent-mint: #b8f5e5;
+  --accent-lavender: #c5d5ff;
+  --accent-sky: #b8e5ff;
+  
+  /* Error Colors */
+  --error-color: #ffa5a8;
+  --error-background: rgba(255, 165, 168, 0.15);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+
+
+button:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 16px var(--shadow);
+}

@@ -1,0 +1,117 @@
+// Token types 
+export const TOKEN_TYPES = {
+  COMMAND: 'COMMAND',
+  BEGIN_ENV: 'BEGIN_ENV',
+  END_ENV: 'END_ENV',
+  LBRACE: 'LBRACE',
+  RBRACE: 'RBRACE',
+  LBRACKET: 'LBRACKET',
+  RBRACKET: 'RBRACKET',
+  MATH_IN: 'MATH_IN',
+  MATH_DIS: 'MATH_DIS',
+  NEWLINE: 'NEWLINE',
+  CONTENT: 'CONTENT',
+  WHITESPACE: 'WHITESPACE',
+  COMMENT: 'COMMENT',
+  EOF: 'EOF',
+} as const;
+
+// Command to HTML tag mapping
+export const COMMAND_MAP: Record<string, string> = {
+  textbf: 'strong',
+  textit: 'em',
+  section: 'h1',
+  subsection: 'h2',
+  subsubsection: 'h3',
+  underline: 'u',
+  img: 'img',
+  title: 'title',
+  author: 'author', 
+  date: 'date',
+};
+
+// Special text commands that produce specific characters
+export const TEXT_COMMANDS: Record<string, string> = {
+  'textbackslash': '\\',
+  'textasciicircum': '^',
+  'textasciitilde': '~',
+  'textdollar': '$',
+  'textunderscore': '_',
+  'textbraceleft': '{',
+  'textbraceright': '}',
+  'textpercent': '%',
+  'textampersand': '&',
+  'texthash': '#'
+};
+
+// Commands that produce standalone elements (not inline)
+export const BLOCK_COMMANDS = new Set([
+  'maketitle',
+  'section',
+  'subsection', 
+  'subsubsection',
+  'newpage',
+  'pagebreak',
+  'clearpage'
+]);
+
+// Common math commands and their Unicode/HTML representations
+export const MATH_SYMBOLS: Record<string, string> = {
+  'alpha': 'α',
+  'beta': 'β',
+  'gamma': 'γ',
+  'delta': 'δ',
+  'epsilon': 'ε',
+  'theta': 'θ',
+  'lambda': 'λ',
+  'mu': 'μ',
+  'pi': 'π',
+  'sigma': 'σ',
+  'tau': 'τ',
+  'phi': 'φ',
+  'chi': 'χ',
+  'psi': 'ψ',
+  'omega': 'ω',
+  'Gamma': 'Γ',
+  'Delta': 'Δ',
+  'Theta': 'Θ',
+  'Lambda': 'Λ',
+  'Pi': 'Π',
+  'Sigma': 'Σ',
+  'Phi': 'Φ',
+  'Psi': 'Ψ',
+  'Omega': 'Ω',
+  'infty': '∞',
+  'sum': '∑',
+  'prod': '∏',
+  'int': '∫',
+  'partial': '∂',
+  'nabla': '∇',
+  'pm': '±',
+  'mp': '∓',
+  'times': '×',
+  'div': '÷',
+  'cdot': '·',
+  'leq': '≤',
+  'geq': '≥',
+  'neq': '≠',
+  'approx': '≈',
+  'equiv': '≡',
+  'subset': '⊂',
+  'supset': '⊃',
+  'subseteq': '⊆',
+  'supseteq': '⊇',
+  'in': '∈',
+  'notin': '∉',
+  'cup': '∪',
+  'cap': '∩',
+  'emptyset': '∅',
+  'forall': '∀',
+  'exists': '∃',
+  'rightarrow': '→',
+  'leftarrow': '←',
+  'leftrightarrow': '↔',
+  'Rightarrow': '⇒',
+  'Leftarrow': '⇐',
+  'Leftrightarrow': '⇔'
+};

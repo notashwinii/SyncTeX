@@ -1,0 +1,95 @@
+.main {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    transition: var(--transition);
+    background: var(--bg-primary);
+    font-family: var(--font-ui);
+}
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    background: var(--bg-primary);
+    position: relative;
+}
+
+.editorPreviewContainer {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    height: calc(100vh - 44px); /* Account for app header (24px) + editor toolbar (20px) */
+    overflow: hidden;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+}
+
+.preview {
+    width: 50%;
+    min-width: 300px;
+    max-width: 60%;
+    border-left: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Add a subtle resize handle */
+.preview::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 10;
+}
+
+.preview::before:hover {
+    background: var(--primary-color);
+    opacity: 0.3;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .preview {
+        width: 40%;
+        min-width: 280px;
+    }
+}
+
+/* Mobile and tablet adjustments */
+@media (max-width: 768px) {
+    .editorPreviewContainer {
+        flex-direction: column;
+        height: calc(100vh - 44px); /* Keep consistent height */
+    }
+    
+    .preview {
+        width: 100%;
+        min-width: unset;
+        max-width: unset;
+        height: 50%;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .editorPane {
+        height: 50%;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .preview {
+        height: 40%;
+    }
+}
