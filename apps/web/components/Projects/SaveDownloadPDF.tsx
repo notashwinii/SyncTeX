@@ -1,45 +1,28 @@
-import React, {useState} from 'react';
+import React from 'react';
 import styles from './SaveDownloadPDF.module.css';
-import { useDownloadPDF, useSaveProject } from '@/lib/query/mutations/project.mutations';
+import { useSaveProject } from '@/lib/query/mutations/project.mutations';
 
 interface SaveDownloadPDFProps {
     id: string;
     content: string;
-    isSaving: boolean;
-    isDownloading: boolean;
-    getContent?: () => string; // Function to get current content
+    getContent?: () => string;
 }
 
 export const SaveDownloadPDF: React.FC<SaveDownloadPDFProps> = ({
     id,
     content,
-    isSaving,
-    isDownloading,
     getContent
 }) => {
 
-    const SaveProject = useSaveProject();
-    const onDownload = useDownloadPDF();
+    const saveProject = useSaveProject();
 
     const handleSave = (id: string, content: string) => {
         // Get fresh content if getter is provided
         const contentToSave = getContent ? getContent() : content;
-        SaveProject.mutate({
+        saveProject.mutate({
             id,
             content: contentToSave
         });
-   };
-
-   const handleDownload = (id: string) => {
-        // Get fresh content if getter is provided
-        const contentToDownload = getContent ? getContent() : content;
-        
-        if (!contentToDownload || contentToDownload.trim() === '') {
-            alert('No content available to download');
-            return;
-        }
-        
-        onDownload.mutate({ id, content: contentToDownload });
    };
 
     return (
@@ -49,11 +32,11 @@ export const SaveDownloadPDF: React.FC<SaveDownloadPDFProps> = ({
         className={styles.toolbarButton}>
             <button
                 onClick={() => handleSave(id, content)}
-                disabled={isSaving}
+                disabled={saveProject.isPending}
                 title="Save Project"
                 
                 >
-                {isSaving ? 'Saving...' : 'Save Project'}
+                {saveProject.isPending ? 'Saving...' : 'Save Project'}
                 </button>
         </div>
         </div>

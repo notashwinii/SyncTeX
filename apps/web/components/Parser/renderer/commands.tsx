@@ -4,7 +4,7 @@ import { RenderNode } from './nodes';
 import React from 'react';
 
 // Global state to store document metadata
-let documentMeta = {
+const documentMeta = {
   title: '',
   author: '',
   date: ''
@@ -199,12 +199,12 @@ export const renderCommandWithRegistry = (node: ASTNode): React.ReactNode => {
   if (node.name === 'caption') {
     return (
       <figcaption>
-        {node.args?.map((arg: ASTNode) =>
+        {node.args?.map((arg: ASTNode, index: number) =>
           arg.type === 'content'
             ? arg.items?.map((item: ASTNode, index: number) =>
               item.type === 'text' ? item.value : <RenderNode key={index} node={item} />
             )
-            : <RenderNode node={arg} />
+            : <RenderNode key={index} node={arg} />
         )}
       </figcaption>
     );

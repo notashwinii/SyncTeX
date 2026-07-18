@@ -11,12 +11,7 @@ const BaseEditor = dynamic(() => import('@/components/Editor/BaseEditor'), {
 export default function ProjectEditor() {
   const params = useParams();
   const projectId = params.projectId as string;
-  
-  const handleCompile = (content: string) => {
-    console.log('Compiling content:', content);
-    // Add compile logic here if needed
-  };
-  
+
   if (!projectId) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -38,7 +33,7 @@ export default function ProjectEditor() {
           Share this URL with collaborators to work together
         </div>
       </div>
-      <BaseEditor projectId={projectId} onCompile={handleCompile} />
+      <BaseEditor key={projectId} projectId={projectId} />
     </div>
   );
 }

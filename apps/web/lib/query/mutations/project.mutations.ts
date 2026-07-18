@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { projectApi } from '@/lib/api/endpoints/project';
 import { CreateProjectRequest, Project } from '@/types/project';
 import { projectKeys } from '../queries/project.queries';
@@ -67,21 +66,16 @@ export const useDownloadPDF = () => {
       a.remove();
       URL.revokeObjectURL(url);
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error('Download PDF failed:', error);
       
-      // Display error message to user
-      const errorMsg = error.response?.data?.message || error.message || 'PDF compilation failed';
-      const errorDetails = error.response?.data?.details || '';
-      
-      alert(`${errorMsg}\n${errorDetails}`);
+      alert(error.message || 'PDF compilation failed');
     },
   });
 };
 
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation<
     void, 

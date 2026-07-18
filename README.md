@@ -24,7 +24,7 @@ Audit & positioning: `docs/plan.md`.
 
 ## Development
 
-Prerequisites: Docker, Go 1.24+, Node 22+.
+Prerequisites: Docker, Go 1.24+, Bun 1.2+.
 
 ```sh
 # 1. backing services (Postgres, Redis, MinIO with bucket auto-created)
@@ -38,13 +38,27 @@ go run ./cmd/server    # or `air` for hot reload
 
 # 3. web (second terminal)
 cd apps/web
-npm install
-npm run dev
+bun install              # also installs the repository pre-commit hook
+bun run dev
 ```
 
 App: http://localhost:3000 · API: http://localhost:8080 · Swagger: /swagger/index.html · MinIO console: http://localhost:9001
 
+API probes: `GET /healthz` for liveness and `GET /readyz` for database
+readiness.
+
 Everything containerized instead: `docker compose --profile full up`.
+
+Before opening a pull request:
+
+```sh
+cd apps/api && go test ./...
+cd ../web && bun run check && bun run build
+```
+
+Husky runs formatting, vet, frontend lint/typechecking, and debug-output
+hygiene checks before each commit. CI repeats these checks from a clean
+checkout and applies every migration to an empty Postgres database.
 
 ## Status
 

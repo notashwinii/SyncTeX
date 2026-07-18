@@ -13,7 +13,7 @@ export const userApi = {
     try {
       const response = await client.get<UserSearchResult>(`/users/email/${encodeURIComponent(email)}`);
       return response.data;
-    } catch (error) {
+    } catch {
       return null;
     }
   },
@@ -22,7 +22,7 @@ export const userApi = {
     try {
       const response = await client.get<UserSearchResult>(`/users/${id}`);
       return response.data;
-    } catch (error) {
+    } catch {
       return null;
     }
   },

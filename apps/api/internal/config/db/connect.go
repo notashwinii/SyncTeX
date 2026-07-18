@@ -2,28 +2,26 @@ package db
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgxpool"
-	"log"
-	"os"
 )
 
-func ConnectDB() *pgxpool.Pool {
-	dbURI := os.Getenv("DB_URI")
-
-	if dbURI == "" {
-		log.Fatal("DB_URI environment variable not set")
-	}
-
+func Connect(ctx context.Context, dbURI string) (*pgxpool.Pool, error) {
 	config, err := pgxpool.ParseConfig(dbURI)
 	if err != nil {
-		log.Fatal("Unable to parse DB URI:", err)
+		return nil, fmt.Errorf("parse database URI: %w", err)
 	}
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), config)
+	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
-		log.Fatal("Unable to create connection pool:", err)
+		return nil, fmt.Errorf("create database pool: %w", err)
 	}
 
-	return pool
+	if err := pool.Ping(ctx); err != nil {
+		pool.Close()
+		return nil, fmt.Errorf("connect to database: %w", err)
+	}
 
+	return pool, nil
 }

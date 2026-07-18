@@ -9,7 +9,6 @@ import * as Y from 'yjs';
 
 interface EditorPaneProps {
   projectId: string;
-  onCompile: (content: string) => void;
   onEditorReady?: (editorRef: React.RefObject<monacoEditor.editor.IStandaloneCodeEditor | null>, docRef: React.RefObject<Y.Doc | null>) => void;
   openFiles: OpenFile[];
   activeFileId: string | null;
@@ -25,7 +24,6 @@ const BaseEditor = dynamic(() => import('./BaseEditor'), {
 
 const EditorPane: React.FC<EditorPaneProps> = ({
   projectId,
-  onCompile,
   onEditorReady,
   openFiles,
   activeFileId,
@@ -44,8 +42,8 @@ const EditorPane: React.FC<EditorPaneProps> = ({
       />
       <div className={styles.editorContainer}>
         <BaseEditor 
+          key={projectId}
           projectId={projectId} 
-          onCompile={onCompile} 
           onEditorReady={onEditorReady}
         />
       </div>

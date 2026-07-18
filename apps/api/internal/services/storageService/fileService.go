@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -29,9 +28,6 @@ func NewFileService(db *pgxpool.Pool) *FileService {
 }
 
 func (s *FileService) InsertFileMetadata(ctx context.Context, meta *FileMetadata) (*FileMetadata, error) {
-
-	fmt.Printf("ProjectId%v", meta)
-
 	row := s.DB.QueryRow(
 		ctx,
 		projectQueries.Q.InsertProjectFile,

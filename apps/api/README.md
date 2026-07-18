@@ -1,44 +1,37 @@
+# SyncTeX API
 
-# SyncTex
+Go 1.24 REST and WebSocket API for authentication, workspaces, projects,
+storage metadata, snapshots, and PDF compilation.
 
-### Prerequisites 
-- Go 1.21+ installed 
-- Git installed 
-- [Air](https://github.com/cosmtrek/air) installed (optional, for live reloading) 
+## Run locally
 
-### Clone the Repository 
-`git clone https://github.com/synctex-org/backend` 
+Start the backing services from the repository root, then run the API:
 
-`cd backend`
+```sh
+docker compose up -d
+cd apps/api
+cp .env.sample .env
+make migrate-up
+go run ./cmd/server
+```
 
+Install Goose before the first migration:
 
-### Setup .env 
+```sh
+go install github.com/pressly/goose/v3/cmd/goose@v3.26.0
+```
 
-The project uses a .env file to store configuration values. Create a .env file in the root directory:
+The API listens on `http://localhost:8080` by default. Swagger is available
+at `/swagger/index.html`; `/healthz` is the liveness probe and `/readyz`
+checks database readiness.
 
-`touch .env`
+## Checks
 
-Add your environment variables to .env. Example:
+```sh
+gofmt -w .
+go vet ./...
+go test -race ./...
+go build ./...
+```
 
-`DB_URI=postgres://username:password@localhost:5432/dbname` `JWT_KEY=your-secret-key`
-
-Replace these values with your actual configuration.
-
-### Dependencies 
-
-Run `go mod tidy` to install all dependencies
-
-### Running the backend
-
-- Using air (Recommended for development) Air will watch for file changes and restart the server automatically: 
-`air` 
-
-Make sure your .air.toml configuration (if exists) is properly set up. 
-
-- Using go run directly You can also run the server without live reloading: 
-`go run cmd/server/main.go` 
-
-The server should now be running locally on the port specified in your .env file (default 8080). 
-
-### Notes 
-Ensure your database or any other services required by the project are running. Check .env for sensitive configuration; do not commit it to version control. Air is optional but recommended for faster development workflow
+Create migrations with `make migrate-new name=descriptive_name`.

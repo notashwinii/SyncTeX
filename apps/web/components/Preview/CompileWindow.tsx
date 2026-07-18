@@ -169,7 +169,7 @@ const PreviewWindow: React.FC<PreviewWindowProps> = ({ inputText, shouldRender, 
                                 alignItems: 'center'
                             }}>
                                 <span style={{ marginRight: '8px' }}>💡</span>
-                                <strong>Tip:</strong> Click "Compile" after fixing errors to refresh the preview
+                                <strong>Tip:</strong> Click &quot;Compile&quot; after fixing errors to refresh the preview
                             </p>
                         </div>
                     </div>
@@ -207,7 +207,7 @@ const PreviewWindow: React.FC<PreviewWindowProps> = ({ inputText, shouldRender, 
                         Ready to compile
                     </p>
                     <p style={{fontSize: '14px', marginTop: '10px', color: '#666666'}}>
-                        Click "Compile" to see your LaTeX document preview
+                        Click &quot;Compile&quot; to see your LaTeX document preview
                     </p>
                 </div>
             </div>

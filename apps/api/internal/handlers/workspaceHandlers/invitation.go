@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -143,8 +144,6 @@ func SendInvitation(pool *pgxpool.Pool) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Failed to send invitation email: %v", err)})
 			return
 		}
-
-		fmt.Printf("Successfully sent invitation email to %s\n", req.Email)
 
 		// Don't include token in response for security
 		invitation.Token = ""
@@ -330,8 +329,7 @@ func AcceptInvitation(pool *pgxpool.Pool) gin.HandlerFunc {
 		// Update invitation status
 		_, err = pool.Exec(c, workspaceQueries.UpdateInvitationStatus, "accepted", invitation.ID)
 		if err != nil {
-			// Member is already added, so just log the error
-			fmt.Printf("Warning: failed to update invitation status: %v\n", err)
+			log.Printf("failed to update invitation %s status after accepting: %v", invitation.ID, err)
 		}
 
 		c.JSON(http.StatusOK, member)

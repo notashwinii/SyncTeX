@@ -7,7 +7,6 @@ import {
   WorkspaceMember,
 } from '@/types/workspace';
 import { workspaceKeys } from '../queries/workspace.queries';
-import { projectKeys } from '../queries/project.queries';
 
 export const useCreateWorkspace = () => {
   const queryClient = useQueryClient();

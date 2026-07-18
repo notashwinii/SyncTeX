@@ -4,7 +4,6 @@ import { renderCommandWithRegistry, resetSectionCounters } from './commands';
 import { renderMathContent } from './mathRenderer';
 import { AutoPaginatedDocument } from './DocumentLayout';
 import './documentLayout.css';
-import katex from 'katex';
 
 export const RenderNode = ({ node }: { node: ASTNode }): React.ReactNode => {
   if (!node) return null;
@@ -137,8 +136,7 @@ export const RenderNode = ({ node }: { node: ASTNode }): React.ReactNode => {
 
     case 'math':
       {
-        const content: any = (node as any).content;
-        const mathContent = typeof content === 'string' ? content : '';
+        const mathContent = typeof node.content === 'string' ? node.content : '';
         
         return (
           <span

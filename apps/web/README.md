@@ -1,78 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SyncTeX Web
 
-## Getting Started
+Next.js 15 frontend for the collaborative Monaco/Yjs editor, project and
+workspace management, live preview, and PDF download.
 
-First, run the development server:
+## Run locally
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```sh
+cd apps/web
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app listens on `http://localhost:3000`. Configure API and collaboration
+endpoints when they differ from the local defaults:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-## Collabortive editing
-
-y-websocket-server
-
-Install dependencies
-```bash
-npm i @y/websocket-server
+```sh
+NEXT_PUBLIC_API_URL=http://localhost:8080/api
+NEXT_PUBLIC_WS_URL=ws://localhost:8080
 ```
 
-Start websocket server
-```bash
-HOST=localhost PORT=1234 npx y-websocket
+The API authenticates browser requests and WebSocket upgrades with its
+HTTP-only cookies.
+
+## Checks
+
+```sh
+bun run check
+bun run build
 ```
 
-monaco-react
-
-react extension for monaco editor
-
-```bash
-npm i @monaco-editor/react
-```
-
-Monaco binding for yjs
-
-```bash
-npm i y-monaco
-```
-
-y-Websocket 
-```bash
-npm i y-websocket
-```
-
-y-indexeddb
-
-Allows for local storage in browser for offline sessions
-
-```bash
-npm i --save y-indexeddb
-```
+`bun install` also configures the repository Husky pre-commit hook.

@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+set -eu
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+git diff --cached --check
+
+changed_go_files="$(git diff --cached --name-only --diff-filter=ACMR -- '*.go')"
+if [ -n "$changed_go_files" ]; then
+  unformatted="$(gofmt -l $changed_go_files)"
+  if [ -n "$unformatted" ]; then
+    echo "The following staged Go files need gofmt:"
+    echo "$unformatted"
+    exit 1
+  fi
+fi
+
+(cd apps/api && go vet ./...)
+(cd apps/web && bun run check)
+./scripts/check-hygiene.sh

@@ -1,7 +1,7 @@
 export type FileNode = {
   id?: string;
   name: string;
-  type: 'file' | 'directory' | 'folder' | 'directory';
+  type: 'file' | 'directory' | 'folder';
   children?: FileNode[];
   object_key?: string;
 };

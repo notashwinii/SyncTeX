@@ -19,8 +19,19 @@ import styles from './Sidebar.module.css';
 import type { FileNode as APIFileNode } from '@/types/file';
 type FileNode = APIFileNode & { isOpen?: boolean };
 
-// File tree will be fetched from backend; initial state is empty
-// Keep the same FileNode shape as backend
+interface FileTreeItemProps {
+  node: FileNode;
+  level: number;
+  onFileSelect: (node: FileNode) => void;
+  onToggleFolder: (node: FileNode) => void;
+}
+
+interface SidebarProps {
+  projectId: string;
+  onFileSelect: (node: FileNode) => void;
+  className?: string;
+  onCollapseToggle?: (collapsed: boolean) => void;
+}
 
 const fileIcon = (name: string) => {
   const ext = name.split('.').pop()?.toLowerCase();
@@ -30,9 +41,10 @@ const fileIcon = (name: string) => {
   return File;
 };
 
-const FileTreeItem = ({ node, level, onFileSelect, onToggleFolder }: any) => {
+const FileTreeItem = ({ node, level, onFileSelect, onToggleFolder }: FileTreeItemProps) => {
+  const isFolder = node.type === 'folder' || node.type === 'directory';
   const Icon =
-    node.type === 'folder'
+    isFolder
       ? node.isOpen
         ? FolderOpen
         : Folder
@@ -46,8 +58,8 @@ const FileTreeItem = ({ node, level, onFileSelect, onToggleFolder }: any) => {
         }`}
         style={{ paddingLeft: `${level * 16 + 8}px` }}
         onClick={() =>
-          node.type === 'folder'
-            ? onToggleFolder(node.id)
+          isFolder
+            ? onToggleFolder(node)
             : onFileSelect(node)
         }
       >
@@ -56,14 +68,14 @@ const FileTreeItem = ({ node, level, onFileSelect, onToggleFolder }: any) => {
         </span>
         <span className={styles.name}>{node.name}</span>
 
-        {node.type === 'folder' && (
+        {isFolder && (
           <span className={styles.chevron}>
             {node.isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </span>
         )}
       </div>
 
-      {node.type === 'folder' && node.isOpen && node.children && (
+      {isFolder && node.isOpen && node.children && (
         <div className={styles.children}>
           {node.children.map((child: FileNode) => (
             <FileTreeItem
@@ -80,7 +92,7 @@ const FileTreeItem = ({ node, level, onFileSelect, onToggleFolder }: any) => {
   );
 };
 
-const Sidebar = ({ projectId, onFileSelect, className, onCollapseToggle }: any) => {
+const Sidebar = ({ projectId, onFileSelect, className, onCollapseToggle }: SidebarProps) => {
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -97,17 +109,17 @@ const Sidebar = ({ projectId, onFileSelect, className, onCollapseToggle }: any) 
       const { storageApi } = await import('@/lib/api/endpoints/storage');
       const tree = await storageApi.getFileTree(pid);
       setFileTree(tree || []);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to load file tree');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load file tree');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const toggleFolder = (id: string) => {
+  const toggleFolder = (target: FileNode) => {
     const walk = (nodes: FileNode[]): FileNode[] =>
       nodes.map(n =>
-        n.id === id && n.type === 'folder'
+        n === target
           ? { ...n, isOpen: !n.isOpen }
           : { ...n, children: n.children && walk(n.children) }
       );
@@ -117,7 +129,7 @@ const Sidebar = ({ projectId, onFileSelect, className, onCollapseToggle }: any) 
   const collapseAll = () => {
     const walk = (nodes: FileNode[]): FileNode[] =>
       nodes.map(n =>
-        n.type === 'folder'
+        n.type === 'folder' || n.type === 'directory'
           ? { ...n, isOpen: false, children: n.children && walk(n.children) }
           : n
       );
@@ -151,7 +163,7 @@ const Sidebar = ({ projectId, onFileSelect, className, onCollapseToggle }: any) 
             } catch (error) {
               console.error(`Error adding file ${node.name}:`, error);
             }
-          } else if (node.type === 'folder' && node.children) {
+          } else if ((node.type === 'folder' || node.type === 'directory') && node.children) {
             const folderPath = `${basePath}${node.name}/`;
             await addFilesToZip(node.children, folderPath);
           }
@@ -229,7 +241,7 @@ const Sidebar = ({ projectId, onFileSelect, className, onCollapseToggle }: any) 
                         setSelectedFile(file);
                         onFileSelect?.(file);
                     }}
-                    onToggleFolder={(id: string) => toggleFolder(id)}
+                    onToggleFolder={toggleFolder}
                 />
             ))}
           </div>

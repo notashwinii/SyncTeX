@@ -1,9 +1,9 @@
 package router
 
 import (
+	"context"
+	"fmt"
 	"net/http"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -25,37 +25,31 @@ import (
 	storageServices "github.com/synctex-org/backend/internal/services/storageService"
 )
 
-func SetupRouter(pool *pgxpool.Pool, s3 *storageServices.S3Service) *gin.Engine {
-	r := gin.Default()
+type Options struct {
+	AllowedOrigins []string
+	TrustedProxies []string
+}
+
+type databaseHealthChecker interface {
+	Ping(context.Context) error
+}
+
+func SetupRouter(
+	pool *pgxpool.Pool,
+	s3 *storageServices.S3Service,
+	options Options,
+) (*gin.Engine, error) {
+	r := gin.New()
+	r.Use(gin.Logger(), gin.Recovery())
+	if err := r.SetTrustedProxies(options.TrustedProxies); err != nil {
+		return nil, fmt.Errorf("configure trusted proxies: %w", err)
+	}
+
 	fileService := storageServices.NewFileService(pool)
 	storageHandler := storageHandlers.NewHandler(s3, fileService)
 
-	// CORS configuration: allow Next.js dev origin and Authorization header
-	frontendOrigin := os.Getenv("FRONTEND_ORIGIN")
-	if frontendOrigin == "" {
-		frontendOrigin = "http://localhost:3000"
-	}
-
-	// Support comma-separated origins in FRONTEND_ORIGIN and allow common local dev hosts
-	allowed := strings.Split(frontendOrigin, ",")
-
 	config := cors.Config{
-		AllowOriginFunc: func(origin string) bool {
-			if origin == "" {
-				return false
-			}
-			// exact match against configured list
-			for _, o := range allowed {
-				if strings.TrimSpace(o) == origin {
-					return true
-				}
-			}
-			// allow localhost variants for developer convenience
-			if strings.HasPrefix(origin, "http://localhost:") || strings.HasPrefix(origin, "http://127.0.0.1:") {
-				return true
-			}
-			return false
-		},
+		AllowOrigins:     options.AllowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -73,12 +67,9 @@ func SetupRouter(pool *pgxpool.Pool, s3 *storageServices.S3Service) *gin.Engine 
 		c.JSON(http.StatusOK, gin.H{"message": "Welcome to SyncTex!!"})
 	})
 
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "ok",
-			"version": "1.0.0",
-		})
-	})
+	r.GET("/healthz", livenessHandler())
+	r.GET("/readyz", readinessHandler(pool))
+	r.GET("/health", readinessHandler(pool))
 
 	// Public auth routes
 	auth := api.Group("/auth")
@@ -98,8 +89,11 @@ func SetupRouter(pool *pgxpool.Pool, s3 *storageServices.S3Service) *gin.Engine 
 	secured.GET("/users/email/:email", userHandlers.GetUserByEmail(pool))
 	secured.GET("/users/:id", userHandlers.GetUserByID(pool))
 
-	//ws
-	secured.GET("/ws/:projectID", websocket.WsHandler(pool))
+	secured.GET(
+		"/ws/:projectID",
+		middleware.RequireProjectAccess(pool, "projectID"),
+		websocket.WsHandler(options.AllowedOrigins),
+	)
 
 	// Workspaces
 	secured.POST("/workspaces", workspaceHandlers.CreateWorkspace(pool))
@@ -121,29 +115,43 @@ func SetupRouter(pool *pgxpool.Pool, s3 *storageServices.S3Service) *gin.Engine 
 	// Projects
 	secured.POST("/workspaces/:id/projects", projectHandlers.CreateProject(pool))
 	secured.GET("/workspaces/:id/projects", projectHandlers.ListProjects(pool))
-	secured.GET("/projects/:id", projectHandlers.GetProject(pool))
-	secured.DELETE("/projects/:id", projectHandlers.DeleteProject(pool))
+	projects := secured.Group("/projects/:id")
+	projects.Use(middleware.RequireProjectAccess(pool, "id"))
+	projects.GET("", projectHandlers.GetProject(pool))
+	projects.DELETE("", projectHandlers.DeleteProject(pool))
+	projects.GET("/tree", storageHandlers.GetFileTree(pool))
+	projects.POST("/storage/upload", storageHandler.Upload)
+	projects.GET("/snapshot", snapshotHandlers.GetLatestSnapshot(pool))
+	projects.PUT("/snapshot", snapshotHandlers.UpsertSnapshot(pool))
+	projects.POST("/sessions", sessionHandlers.StartSession(pool))
+	projects.POST("/download", downloadHandlers.DownloadPDF(pool))
+
 	secured.GET(
-		"/projects/:id/tree",
-		storageHandlers.GetFileTree(pool),
+		"/signed-url",
+		middleware.RequireObjectProjectAccess(pool),
+		storageHandler.GetSignedURL,
 	)
 
-	secured.GET("/signed-url", storageHandler.GetSignedURL)
-
-	// S3 routes
-	secured.POST("/projects/:id/storage/upload", storageHandler.Upload)
-
-	// Snapshots (latest only)
-	secured.GET("/projects/:id/snapshot", snapshotHandlers.GetLatestSnapshot(pool))
-	secured.PUT("/projects/:id/snapshot", snapshotHandlers.UpsertSnapshot(pool))
-
-	// Sessions (basic lifecycle)
-	secured.POST("/projects/:id/sessions", sessionHandlers.StartSession(pool))
 	secured.POST("/sessions/:id/end", sessionHandlers.EndSession(pool))
 
-	// Download PDF
-	secured.POST("/projects/:id/download", downloadHandlers.DownloadPDF(pool))
+	return r, nil
+}
 
-	return r
+func livenessHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	}
+}
 
+func readinessHandler(database databaseHealthChecker) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+		defer cancel()
+
+		if err := database.Ping(ctx); err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unavailable"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "ready"})
+	}
 }

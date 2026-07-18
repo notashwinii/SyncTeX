@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Undo, Redo, Play, Download } from 'lucide-react';
 import * as Y from 'yjs';
 import type { editor as MonacoEditorNS } from 'monaco-editor';
-import { OpenFile } from './FileTabs';
 import styles from './EditorToolbar.module.css';
 import { SaveDownloadPDF } from '@/components/Projects/SaveDownloadPDF';
 import { API_CONFIG } from '@/lib/config';
@@ -15,8 +14,6 @@ interface EditorToolbarProps {
   isEditorReady?: boolean;
   onCompile: (content: string, errors?: string[]) => void;
   onReportErrors?: (errors: string[]) => void;
-  activeFileId?: string | null;
-  openFiles?: OpenFile[];
   projectId: string;
 }
 
@@ -26,25 +23,18 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   isEditorReady = false,
   onCompile,
   onReportErrors,
-  activeFileId,
-  openFiles = [],
   projectId
 }) => {
   const [documentContent, setDocumentContent] = useState<string>('');
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
   const handleUndo = () => {
     if (editorRef?.current && isEditorReady) {
       try {
         editorRef.current.trigger('keyboard', 'undo', null);
-        console.log("Undo executed successfully");
       } catch (error) {
         console.error("Error during undo:", error);
       }
-    } else {
-      console.log("Editor not ready or not available");
     }
   };
 
@@ -52,30 +42,15 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
     if (editorRef?.current && isEditorReady) {
       try {
         editorRef.current.trigger('keyboard', 'redo', null);
-        console.log("Redo executed successfully");
       } catch (error) {
         console.error("Error during redo:", error);
       }
-    } else {
-      console.log("Editor not ready or not available");
     }
   };
 
   const validateLaTeX = (content: string): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
     const lines = content.split('\n');
-
-    // Helper function to find line number for a pattern
-    const findLineNumber = (pattern: string | RegExp): number => {
-      for (let i = 0; i < lines.length; i++) {
-        if (typeof pattern === 'string') {
-          if (lines[i].includes(pattern)) return i + 1;
-        } else {
-          if (pattern.test(lines[i])) return i + 1;
-        }
-      }
-      return -1;
-    };
 
     // Check for basic document structure with detailed help
     if (!content.includes('\\documentclass')) {
@@ -102,11 +77,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const lineNum = i + 1;
-
-      // Check for undefined commands
-      if (line.includes('\\ima') && !line.includes('\\image')) {
-        errors.push(`Line ${lineNum}: ❌ Undefined command \\ima | LaTeX doesn't recognize this command | Fix: Use \\includegraphics{image.png} (requires \\usepackage{graphicx})`);
-      }
 
       if (line.includes('\\textsize')) {
         errors.push(`Line ${lineNum}: ❌ Invalid command \\textsize | This command doesn't exist in LaTeX | Fix: Use \\large, \\Large, \\small, \\tiny, \\huge, or \\normalsize instead`);
@@ -203,7 +173,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       errors.push(`🔴 Unmatched environments: ${beginMatches.length} \\begin commands vs ${endMatches.length} \\end commands | Every \\begin{environment} must have a matching \\end{environment} | Fix: Add or remove ${diff} environment tag(s)`);
       
       // Try to identify specific unmatched environments
-      const beginEnvs = beginMatches.map(b => b.env);
       const endEnvs = endMatches.map(e => e.env);
       
       beginMatches.forEach(beginMatch => {
@@ -222,13 +191,10 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       try {
         const yText = yjsDoc.current.getText('monacotest');
         const content = yText.toString();
-        
-        console.log("Attempting to compile content:", content);
-        
+
         // Validate LaTeX and show errors in preview pane
         const validation = validateLaTeX(content);
         if (!validation.isValid) {
-          console.log("LaTeX validation errors:", validation.errors);
           // Pass errors to preview pane - don't render
           onCompile('', validation.errors);
           return;
@@ -239,11 +205,10 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         onCompile(content);
         
       } catch (error) {
-        console.log("Error compiling document to LaTeX", error);
+        console.error("Error compiling document to LaTeX", error);
         onCompile('', [`Compilation error: ${error}`]);
       }
     } else {
-      console.log("Editor Unavailable");
       onCompile('', ['Editor is not ready']);
     }
   };
@@ -316,7 +281,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      console.log("PDF downloaded successfully");
     } catch (error) {
       console.error("Error downloading PDF:", error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -355,8 +319,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       <SaveDownloadPDF
         id={projectId}
         content={documentContent}
-        isSaving={isSaving}
-        isDownloading={isDownloading}
         getContent={getCurrentContent}
       />
       <div className={styles.buttonGroup}>

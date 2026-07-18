@@ -4,36 +4,22 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"log"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
 	"github.com/synctex-org/backend/schemas/authSchemas"
 )
 
 var (
 	JwtKey      []byte
 	RefreshKey  []byte
-	AccessTime  time.Duration
-	RefreshTime time.Duration
+	AccessTime  = 30 * time.Minute
+	RefreshTime = 30 * 24 * time.Hour
 )
 
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No .env file found, relying on system environment variables")
-	}
-	secret := os.Getenv("JWT_KEY")
-	refreshSecret := os.Getenv("REFRESH_KEY")
-	if secret == "" || refreshSecret == "" {
-		log.Fatal("JWT_KEY or REFRESH_KEY environment variable not set")
-	}
-	JwtKey = []byte(secret)
-	RefreshKey = []byte(refreshSecret)
-	AccessTime = 30 * time.Minute
-	RefreshTime = 30 * 24 * time.Hour
+func Configure(jwtKey, refreshKey string) {
+	JwtKey = []byte(jwtKey)
+	RefreshKey = []byte(refreshKey)
 }
 
 func generateTokenID() string {

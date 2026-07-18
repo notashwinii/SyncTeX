@@ -2,28 +2,24 @@ package config
 
 import (
 	"context"
-	"log"
-	"os"
+	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/config"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func InitS3() *s3.Client {
-	endpoint := os.Getenv("B2_ENDPOINT")
-	accessKey := os.Getenv("B2_ACCESS_KEY")
-	secretKey := os.Getenv("B2_SECRET_KEY")
-	region := os.Getenv("B2_REGION")
-
-	if endpoint == "" || accessKey == "" || secretKey == "" {
-		log.Fatal("missing Backblaze S3 configuration")
-	}
-
-	cfg, err := config.LoadDefaultConfig(
-		context.Background(),
-		config.WithRegion(region),
-		config.WithCredentialsProvider(
+func InitS3(
+	ctx context.Context,
+	endpoint string,
+	accessKey string,
+	secretKey string,
+	region string,
+) (*s3.Client, error) {
+	cfg, err := awsconfig.LoadDefaultConfig(
+		ctx,
+		awsconfig.WithRegion(region),
+		awsconfig.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(
 				accessKey,
 				secretKey,
@@ -32,15 +28,13 @@ func InitS3() *s3.Client {
 		),
 	)
 	if err != nil {
-		log.Fatal("failed to load AWS config:", err)
+		return nil, fmt.Errorf("load S3 configuration: %w", err)
 	}
 
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.EndpointResolver = s3.EndpointResolverFromURL(endpoint)
-		o.UsePathStyle = true // REQUIRED for Backblaze
+		o.UsePathStyle = true
 	})
 
-	log.Println(" Connected to Backblaze S3")
-
-	return client
+	return client, nil
 }

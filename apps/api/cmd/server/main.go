@@ -11,44 +11,59 @@
 package main
 
 import (
+	"context"
 	"log"
-	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/synctex-org/backend/docs"
 	"github.com/synctex-org/backend/internal/config"
 	"github.com/synctex-org/backend/internal/config/db"
 	"github.com/synctex-org/backend/internal/router"
+	authservices "github.com/synctex-org/backend/internal/services/authServices"
 	storage "github.com/synctex-org/backend/internal/services/storageService"
 )
 
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No .env file found, relying on system environment variables")
-	}
-
-}
-
 func main() {
-
-	db := db.ConnectDB()
-	defer db.Close()
-
-	s3 := config.InitS3()
-	bucket := os.Getenv("B2_BUCKET")
-	if bucket == "" {
-		log.Fatal("B2_BUCKET not set")
-	}
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found; using process environment")
 	}
 
-	s3Client := storage.NewS3Service(s3, bucket)
+	environment, err := config.LoadEnvironment()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	r := router.SetupRouter(db, s3Client)
-	log.Printf("Listening on port %s", port)
-	log.Fatal(r.Run(":" + port))
+	authservices.Configure(environment.JWTKey, environment.RefreshKey)
 
+	pool, err := db.Connect(context.Background(), environment.DBURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer pool.Close()
+
+	s3Client, err := config.InitS3(
+		context.Background(),
+		environment.S3Endpoint,
+		environment.S3AccessKey,
+		environment.S3SecretKey,
+		environment.S3Region,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	storageService := storage.NewS3Service(s3Client, environment.S3Bucket)
+
+	gin.SetMode(gin.ReleaseMode)
+	r, err := router.SetupRouter(pool, storageService, router.Options{
+		AllowedOrigins: environment.FrontendOrigins,
+		TrustedProxies: environment.TrustedProxies,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Listening on port %s", environment.Port)
+	log.Fatal(r.Run(":" + environment.Port))
 }

@@ -9,7 +9,7 @@ export interface Token {
 export interface ASTNode {
     type: string;
     children?: ASTNode[];
-    content?: ASTNode | ASTNode[];
+    content?: ASTNode | ASTNode[] | string;
     items?: ASTNode[];
     args?: ASTNode[];
     optionalArgs?: ASTNode[];

@@ -2,12 +2,22 @@
   "name": "synctex",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "bun@1.2.14",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint --max-warnings=14",
+    "typecheck": "tsc --noEmit",
+    "check": "bun run lint && bun run typecheck",
+    "prepare": "cd ../.. && husky"
   },
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
+  "trustedDependencies": [
+    "unrs-resolver"
+  ],
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-query-devtools": "^5.90.2",
@@ -16,7 +26,7 @@
     "katex": "^0.16.27",
     "lucide-react": "^0.561.0",
     "monaco-editor": "^0.53.0",
-    "next": "15.5.3",
+    "next": "15.5.20",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0"
@@ -28,17 +38,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@y/websocket-server": "^0.1.1",
     "eslint": "^9",
-    "eslint-config-next": "15.5.3",
-    "express": "^5.1.0",
-    "monaco": "^1.201704190613.0",
+    "eslint-config-next": "15.5.20",
+    "husky": "^9.1.7",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "ws": "^8.18.3",
     "y-indexeddb": "^9.0.12",
     "y-monaco": "^0.1.6",
-    "y-webrtc": "^10.3.0",
     "y-websocket": "^3.0.0",
     "yjs": "^13.6.27"
   }

@@ -64,7 +64,14 @@ services:
   api:
     profiles: ["full"]
     build: ./apps/api
-    env_file: ./apps/api/.env
+    env_file:
+      - path: ./apps/api/.env.sample
+        required: true
+      - path: ./apps/api/.env
+        required: false
+    environment:
+      DB_URI: postgres://synctex:synctex@postgres:5432/synctex
+      B2_ENDPOINT: http://minio:9000
     ports:
       - "8080:8080"
     depends_on:
@@ -72,6 +79,11 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   web:
     profiles: ["full"]
@@ -82,4 +94,5 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - api
+      api:
+        condition: service_healthy

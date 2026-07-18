@@ -1,7 +1,5 @@
 'use client'
 
-import dynamic from 'next/dynamic';
-
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -17,12 +15,6 @@ import { OpenFile } from '@/components/Editor/FileTabs';
 import styles from '@/app/editor/editor.module.css'
 import type * as monacoEditor from 'monaco-editor';
 
-
-const BaseEditor = dynamic(() => import('@/components/Editor/BaseEditor'), {
-  ssr: false,
-  loading: () => <div>Loading collaborative editor...</div>
-});
-
 // openFiles will be populated from backend file tree
 
 function EditorContent() {
@@ -31,7 +23,6 @@ function EditorContent() {
   const [compiledContent, setCompiledContent] = useState<string>('');
   const [shouldRender, setShouldRender] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [isEditorReady, setIsEditorReady] = useState<boolean>(false);
   const [openFiles, setOpenFiles] = useState<OpenFile[]>([]);
@@ -53,8 +44,6 @@ function EditorContent() {
   };
 
   const handleFileSelect = (file: FileNode) => {
-    setSelectedFile(file);
-    console.log('Selected file:', file.name);
     // Add to open files if not present and set active
     setOpenFiles((prev) => {
       if (prev.some((f) => f.id === (file.id ?? file.name))) return prev;
@@ -122,7 +111,6 @@ function EditorContent() {
   const handleTabFileSelect = (fileId: string) => {
     setActiveFileId(fileId);
     // TODO: Load file content into editor
-    console.log('Tab selected:', fileId);
   };
 
   const handleTabFileClose = (fileId: string) => {
@@ -133,8 +121,6 @@ function EditorContent() {
     if (fileId === activeFileId && newOpenFiles.length > 0) {
       setActiveFileId(newOpenFiles[0].id);
     }
-    
-    console.log('File closed:', fileId);
   };
 
   const handleNewFile = () => {
@@ -148,7 +134,6 @@ function EditorContent() {
     
     setOpenFiles([...openFiles, newFile]);
     setActiveFileId(newFileId);
-    console.log('New file created');
   };
   
   // Populate open files from backend file tree when projectId changes
@@ -163,7 +148,7 @@ function EditorContent() {
 
         // flatten tree into file list with full paths
         const files: OpenFile[] = [];
-        const walk = (nodes: any[], parentPath = '') => {
+        const walk = (nodes: FileNode[], parentPath = '') => {
           if (!nodes) return;
           for (const n of nodes) {
             const fullPath = parentPath ? `${parentPath}/${n.name}` : n.name;
@@ -229,13 +214,10 @@ function EditorContent() {
             setValidationErrors(Array.isArray(errs) ? errs : [String(errs)]);
             setShouldRender(false);
           }}
-          openFiles={openFiles}
-          activeFileId={activeFileId}
         />
         <div className={styles.editorPreviewContainer}>
           <EditorPane
             projectId={projectId}
-            onCompile={handleCompile}
             onEditorReady={handleEditorReady}
             openFiles={openFiles}
             activeFileId={activeFileId}

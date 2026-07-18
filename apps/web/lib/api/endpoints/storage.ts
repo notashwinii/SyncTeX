@@ -1,3 +1,4 @@
+import type { AxiosProgressEvent } from 'axios';
 import client from '../client';
 import type { FileNode, SignedURLResponse, UploadResponse } from '@/types/file';
 
@@ -11,15 +12,15 @@ export const storageApi = {
 
   getSignedURL: async (params: { key: string }): Promise<SignedURLResponse> => {
     // The backend streams text files directly (Content-Type: text/*) and returns JSON {url, expires} for non-text files
-    const response = await client.get<string | any>('/signed-url', {
+    const response = await client.get<string>('/signed-url', {
       params,
       responseType: 'text' as const,
     });
 
-    const ct = response.headers?.['content-type'] || '';
+    const contentType = response.headers['content-type'];
     const raw = response.data as string;
 
-    if (ct && ct.startsWith('text/')) {
+    if (typeof contentType === 'string' && contentType.startsWith('text/')) {
       return { content: raw } as SignedURLResponse;
     }
 
@@ -30,7 +31,7 @@ export const storageApi = {
         url: parsed.url,
         expires: parsed.expires,
       } as SignedURLResponse;
-    } catch (_e) {
+    } catch {
       // fallback: return raw text
       return { content: raw } as SignedURLResponse;
     }
@@ -48,7 +49,7 @@ export const storageApi = {
 
     const response = await client.post(`/projects/${projectId}/storage/upload`, form, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: (ev: any) => {
+      onUploadProgress: (ev: AxiosProgressEvent) => {
         if (onProgress && ev?.total) {
           onProgress(Math.round((ev.loaded / ev.total) * 100));
         }

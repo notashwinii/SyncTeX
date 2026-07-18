@@ -41,8 +41,6 @@ export default class PreviewErrorBoundary extends React.Component<PreviewErrorBo
     // Keep state in sync
     this.setState({ hasError: true, messages });
 
-    // Log for diagnostics without crashing the app
-    // eslint-disable-next-line no-console
     console.error('Preview render error:', error, info);
   }
 
