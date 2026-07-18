@@ -35,3 +35,13 @@ go build ./...
 ```
 
 Create migrations with `make migrate-new name=descriptive_name`.
+
+Database access is being migrated incrementally to sqlc-generated `pgx/v5`
+queries. After changing `sqlc.yaml`, migrations, or SQL files under
+`internal/db/query`, regenerate the committed package:
+
+```sh
+make sqlc-generate
+```
+
+CI reruns generation and fails when `internal/db` is stale.

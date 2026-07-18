@@ -33,7 +33,7 @@ docker compose up -d
 # 2. api
 cd apps/api
 cp .env.sample .env
-make migrate-up        # needs goose: go install github.com/pressly/goose/v3/cmd/goose@latest
+make migrate-up        # needs goose: go install github.com/pressly/goose/v3/cmd/goose@v3.26.0
 go run ./cmd/server    # or `air` for hot reload
 
 # 3. web (second terminal)
@@ -42,12 +42,30 @@ bun install              # also installs the repository pre-commit hook
 bun run dev
 ```
 
-App: http://localhost:3000 · API: http://localhost:8080 · Swagger: /swagger/index.html · MinIO console: http://localhost:9001
+App: http://localhost:3000 · API: http://localhost:8080 · Swagger:
+http://localhost:8080/swagger/index.html · MinIO console:
+http://localhost:9001
 
 API probes: `GET /healthz` for liveness and `GET /readyz` for database
 readiness.
 
-Everything containerized instead: `docker compose --profile full up`.
+Run everything in containers, including automatic migrations and the
+same-origin Caddy proxy:
+
+```sh
+docker compose --profile full up --build --wait
+```
+
+The containerized app, API, WebSocket, probes, and Swagger UI are all served
+from `http://localhost:3000`; API routes retain the `/api` prefix. To use a
+different local port, keep the HTTP origin and WebSocket URL aligned:
+
+```sh
+SYNCTEX_PORT=3100 \
+SYNCTEX_ORIGIN=http://localhost:3100 \
+SYNCTEX_WS_URL=ws://localhost:3100 \
+docker compose --profile full up --build --wait
+```
 
 Before opening a pull request:
 
@@ -58,7 +76,8 @@ cd ../web && bun run check && bun run build
 
 Husky runs formatting, vet, frontend lint/typechecking, and debug-output
 hygiene checks before each commit. CI repeats these checks from a clean
-checkout and applies every migration to an empty Postgres database.
+checkout, verifies generated database queries, and applies every migration to
+an empty Postgres database.
 
 ## Status
 
