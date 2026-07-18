@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api/endpoints/auth';
-import { LoginRequest, RegisterRequest, TokenResponse } from '@/types/auth';
+import { LoginRequest, RegisterRequest, SessionResponse } from '@/types/auth';
 import { authKeys } from '../queries/auth.queries';
 import { ROUTES } from '@/lib/config';
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<TokenResponse, Error, LoginRequest>({
+  return useMutation<SessionResponse, Error, LoginRequest>({
     mutationFn: authApi.login,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
@@ -50,7 +50,7 @@ export const useLogout = () => {
 };
 
 export const useRefreshToken = () => {
-  return useMutation<TokenResponse, Error, void>({
+  return useMutation<SessionResponse, Error, void>({
     mutationFn: authApi.refresh,
   });
 };

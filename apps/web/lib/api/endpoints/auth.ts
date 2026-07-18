@@ -2,14 +2,14 @@ import client from '../client';
 import {
   LoginRequest,
   RegisterRequest,
-  TokenResponse,
+  SessionResponse,
   UserProfile,
 } from '@/types/auth';
 
 // Auth API endpoints
 export const authApi = {
-  login: async (data: LoginRequest): Promise<TokenResponse> => {
-    const response = await client.post<TokenResponse>('/auth/login', data);
+  login: async (data: LoginRequest): Promise<SessionResponse> => {
+    const response = await client.post<SessionResponse>('/auth/login', data);
     return response.data;
   },
 
@@ -21,8 +21,8 @@ export const authApi = {
     return response.data;
   },
 
-  refresh: async (): Promise<TokenResponse> => {
-    const response = await client.post<TokenResponse>('/auth/refresh', {});
+  refresh: async (): Promise<SessionResponse> => {
+    const response = await client.post<SessionResponse>('/auth/refresh', {});
     return response.data;
   },
 

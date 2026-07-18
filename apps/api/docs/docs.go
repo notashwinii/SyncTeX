@@ -43,10 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/authSchemas.SessionResponse"
                         }
                     },
                     "400": {
@@ -108,9 +105,6 @@ const docTemplate = `{
         "/auth/refresh": {
             "post": {
                 "description": "Refresh access token using refresh token",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -118,22 +112,11 @@ const docTemplate = `{
                     "auth"
                 ],
                 "summary": "Refresh access token",
-                "parameters": [
-                    {
-                        "description": "Refresh token data",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/authSchemas.RefreshRequest"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authSchemas.TokenResponse"
+                            "$ref": "#/definitions/authSchemas.SessionResponse"
                         }
                     },
                     "400": {
@@ -726,17 +709,6 @@ const docTemplate = `{
                 }
             }
         },
-        "authSchemas.RefreshRequest": {
-            "type": "object",
-            "required": [
-                "refresh_token"
-            ],
-            "properties": {
-                "refresh_token": {
-                    "type": "string"
-                }
-            }
-        },
         "authSchemas.RegisterRequest": {
             "type": "object",
             "required": [
@@ -756,20 +728,11 @@ const docTemplate = `{
                 }
             }
         },
-        "authSchemas.TokenResponse": {
+        "authSchemas.SessionResponse": {
             "type": "object",
             "properties": {
-                "access_token": {
-                    "type": "string"
-                },
                 "expires_in": {
                     "type": "integer"
-                },
-                "refresh_token": {
-                    "type": "string"
-                },
-                "token_type": {
-                    "type": "string"
                 }
             }
         },

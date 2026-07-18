@@ -10,9 +10,7 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface TokenResponse {
-  access_token: string;
-  token_type: string;
+export interface SessionResponse {
   expires_in: number;
 }
 
@@ -32,17 +30,7 @@ export interface UserProfile {
 export interface Claims {
   user_id: string;
   username: string;
-  role: string;
-  exp?: number;
-  iat?: number;
-  iss?: string;
-  sub?: string;
-}
-
-export interface RefreshClaims {
-  user_id: string;
-  username: string;
-  token_id: string;
+  session_id: string;
   exp?: number;
   iat?: number;
   iss?: string;
