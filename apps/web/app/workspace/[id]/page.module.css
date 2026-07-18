@@ -1,0 +1,460 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+  min-height: 100vh;
+  background-color: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  box-sizing: border-box;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 250px;
+  background-color:var(--bg-primary);
+  padding: 32px 0;
+  box-shadow: 2px 0 5px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+.logoWrapper {
+  margin-bottom: 40px; 
+  display: flex;
+  justify-content: center;
+  padding: 0 24px;
+}
+
+.newProjectBtn {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-align: center;
+  margin: 0 24px 32px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  width: calc(100% - 48px);
+}
+
+.newProjectBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.navItem {
+  font-size: 16px;
+  color: var(--text-primary);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.navItem:hover {
+  background-color: var(--hover-background);
+}
+
+.navItem.active {
+  background-color: var(--hover-background);
+  color: var(--primary-color);
+  border-left: 4px solid var(--primary-color);
+  padding-left: 20px;
+}
+
+.sidebarFooter {
+  padding: 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.membersBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--secondary-background);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.membersBtn:hover {
+  background: var(--hover-background);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 48px;
+  background-color: var(--bg-secondary);
+  min-height: 100vh;
+  margin-left: 250px;
+  width: calc(100vw - 250px);
+  box-sizing: border-box;
+}
+
+.searchWrapper {
+  margin-bottom: 32px;
+}
+
+.searchBar {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--input-background);
+  color: var(--text-primary);
+}
+
+.tableContainer {
+  background-color: var(--card-background);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px var(--shadow);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  width: 45%;
+  padding-left: 24px;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 18%;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  width: 18%;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  width: 19%;
+}
+
+.table th {
+  background-color: var(--secondary-background);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.actionBtn {
+  margin-right: 8px;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.actionBtn:hover {
+  background-color: var(--secondary-background);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.loadingState,
+.emptyState,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.emptyState h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.emptyState p {
+  margin: 0;
+}
+
+.createFirstBtn {
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.createFirstBtn:hover {
+  background: var(--primary-hover);
+}
+
+.backBtn {
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.backBtn:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 100;
+  }
+
+  .mainContent {
+    margin-left: 0;
+    width: 100%;
+    padding: 24px;
+  }
+}
+
+.error svg {
+  color: var(--error-color);
+}
+
+.error h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.error p {
+  margin: 0;
+  font-size: 1rem;
+  max-width: 500px;
+}
+
+.backBtn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.938rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--secondary-background);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background: var(--hover-background);
+  border-color: var(--primary-color);
+}
+
+.titleBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.addMemberBtn,
+.createBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.938rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.addMemberBtn {
+  background: var(--secondary-background);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.addMemberBtn:hover {
+  background: var(--hover-background);
+  border-color: var(--primary-color);
+}
+
+.createBtn {
+  background: var(--primary-color);
+  color: white;
+}
+
+.createBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.createBtn:active {
+  transform: translateY(0);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: monospace;
+}
+
+.section {
+  margin-top: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .titleBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .addMemberBtn,
+  .createBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .sectionTitle {
+    margin-left: 1rem;
+  }
+}

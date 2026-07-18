@@ -1,0 +1,30 @@
+# Go build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Common build/output dirs
+/bin/
+/build/
+/dist/
+/tmp/
+/temp/
+
+# Coverage and caches
+coverage/
+*.coverprofile
+*.cov
+.cache/
+
+# Env and local config
+.env
+.env.*
+!.env.sample
+*.local
+
+# OS/editor noise (prefer global ignore)
+.DS_Store
+Thumbs.db

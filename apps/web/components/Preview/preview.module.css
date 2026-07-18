@@ -1,0 +1,141 @@
+.window{
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.6;
+    background-color: #f5f5f5 !important;
+    color: #000000 !important;
+    box-sizing: border-box;
+}
+
+/* Container styling - let JavaScript handle scaling */
+.window .latex-document-container {
+    padding: 20px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+}
+
+.window .pages-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Page wrapper - scaling handled by JavaScript */
+.window .page-wrapper {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    overflow: hidden;
+    transform-origin: top center;
+}/* Override for document preview */
+.window .latex-document {
+    margin: 0;
+    padding: 20px 0;
+    background-color: #f5f5f5 !important;
+}
+
+.window .document-page {
+    background-color: white !important;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2) !important;
+}
+
+.window h1, .window h2, .window h3, .window h4, .window h5, .window h6 {
+    margin: 1em 0 0.5em 0;
+    font-weight: bold;
+    color: #000000 !important;
+}
+
+.window p {
+    margin: 0.5em 0;
+    color: #000000 !important;
+}
+
+.window ul, .window ol {
+    margin: 1em 0;
+    padding-left: 2em;
+    color: #000000 !important;
+}
+
+.window li {
+    color: #000000 !important;
+}
+
+.window strong {
+    font-weight: bold;
+    color: #000000 !important;
+}
+
+.window em {
+    font-style: italic;
+    color: #000000 !important;
+}
+
+.window a {
+    color: #0066cc !important;
+    text-decoration: underline;
+}
+
+.window a:hover {
+    color: #004499 !important;
+}
+
+.window code {
+    background-color: #f5f5f5 !important;
+    color: #333333 !important;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+.window pre {
+    background-color: #f5f5f5 !important;
+    color: #333333 !important;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+}
+
+.window blockquote {
+    border-left: 4px solid #dddddd !important;
+    padding-left: 15px;
+    margin: 10px 0;
+    color: #666666 !important;
+    font-style: italic;
+}
+
+.window table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.window th, .window td {
+    border: 1px solid #dddddd !important;
+    padding: 8px;
+    text-align: left;
+    color: #000000 !important;
+}
+
+.window th {
+    background-color: #f9f9f9 !important;
+    font-weight: bold;
+}
+
+.window hr {
+    border: none;
+    border-top: 1px solid #dddddd !important;
+    margin: 20px 0;
+}

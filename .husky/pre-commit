@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+set -eu
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+git diff --cached --check
+
+unformatted="$(cd apps/api && gofmt -l .)"
+if [ -n "$unformatted" ]; then
+  echo "The following Go files need gofmt:"
+  echo "$unformatted"
+  exit 1
+fi
+
+(cd apps/api && go vet ./...)
+(cd apps/web && bun run check)
+./scripts/check-hygiene.sh

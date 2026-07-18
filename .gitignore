@@ -1,0 +1,27 @@
+# deps
+node_modules/
+
+# env & secrets
+.env
+.env.local
+.env*.local
+
+# build output
+apps/web/.next/
+apps/web/out/
+dist/
+*.pdf.log
+
+# go
+apps/api/tmp/
+apps/api/synctex
+
+# editor/os
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# local data volumes
+.data/
+.claude/
