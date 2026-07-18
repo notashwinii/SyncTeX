@@ -52,9 +52,15 @@ func SetupRouter(
 	sessionManager := authservices.NewSessionManager(pool)
 
 	config := cors.Config{
-		AllowOrigins:     options.AllowedOrigins,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowOrigins: options.AllowedOrigins,
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Accept",
+			"Authorization",
+			authservices.CSRFHeaderName,
+		},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -78,12 +84,20 @@ func SetupRouter(
 	auth := api.Group("/auth")
 	auth.POST("/register", authHandlers.Register(pool))
 	auth.POST("/login", authHandlers.Login(pool, sessionManager, options.SecureCookies))
-	auth.POST("/refresh", authHandlers.RefreshToken(sessionManager, options.SecureCookies))
-	auth.POST("/logout", authHandlers.Logout(sessionManager, options.SecureCookies))
+	auth.POST(
+		"/refresh",
+		middleware.RequireCSRF(),
+		authHandlers.RefreshToken(sessionManager, options.SecureCookies),
+	)
+	auth.POST(
+		"/logout",
+		middleware.RequireCSRF(),
+		authHandlers.Logout(sessionManager, options.SecureCookies),
+	)
 
 	// Authenticated routes
 	secured := api.Group("")
-	secured.Use(middleware.AuthRequired())
+	secured.Use(middleware.AuthRequired(), middleware.RequireCSRFForCookieAuth())
 
 	secured.GET("/me", userHandlers.Me())
 

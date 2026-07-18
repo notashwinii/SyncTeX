@@ -1,6 +1,9 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '../config';
 
+const CSRF_COOKIE_NAME = 'csrf_token';
+const CSRF_HEADER_NAME = 'X-CSRF-Token';
+const UNSAFE_METHODS = new Set(['post', 'put', 'patch', 'delete']);
 
 export class ApiError extends Error {
   constructor(
@@ -29,6 +32,20 @@ const handleApiError = (error: unknown): ApiError => {
   return new ApiError(statusCode, message);
 };
 
+const getCsrfToken = (): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+
+  const prefix = `${CSRF_COOKIE_NAME}=`;
+  const cookie = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(prefix));
+  return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : undefined;
+};
+
+const getCsrfHeaders = (): Record<string, string> => {
+  const token = getCsrfToken();
+  return token ? { [CSRF_HEADER_NAME]: token } : {};
+};
 
 const client: AxiosInstance = axios.create({
   baseURL: API_CONFIG.BASE_URL,
@@ -39,6 +56,15 @@ const client: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
+client.interceptors.request.use((config) => {
+  if (UNSAFE_METHODS.has(config.method?.toLowerCase() ?? '')) {
+    const token = getCsrfToken();
+    if (token) {
+      config.headers.set(CSRF_HEADER_NAME, token);
+    }
+  }
+  return config;
+});
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -93,7 +119,7 @@ client.interceptors.response.use(
         await axios.post(
           `${API_CONFIG.BASE_URL}/auth/refresh`,
           {},
-          { withCredentials: true }
+          { withCredentials: true, headers: getCsrfHeaders() }
         );
 
         processQueue(null);

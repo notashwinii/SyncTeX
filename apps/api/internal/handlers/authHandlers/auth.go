@@ -24,6 +24,7 @@ const (
 	accessCookieName  = "token"
 	refreshCookieName = "refresh_token"
 	refreshCookiePath = "/api/auth"
+	csrfCookiePath    = "/"
 )
 
 type sessionManager interface {
@@ -138,6 +139,12 @@ func Login(pool *pgxpool.Pool, sessions sessionManager, secureCookies bool) gin.
 			return
 		}
 
+		csrfToken, err := authservices.GenerateCSRFToken()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create session"})
+			return
+		}
+
 		session, err := sessions.Issue(ctx, user.ID, c.Request.UserAgent(), c.ClientIP())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create session"})
@@ -155,7 +162,7 @@ func Login(pool *pgxpool.Pool, sessions sessionManager, secureCookies bool) gin.
 			return
 		}
 
-		setAuthCookies(c, accessToken, session.RefreshToken, secureCookies)
+		setAuthCookies(c, accessToken, session.RefreshToken, csrfToken, secureCookies)
 
 		c.JSON(http.StatusOK, authSchemas.SessionResponse{
 			ExpiresIn: int(authservices.AccessTime.Seconds()),
@@ -178,6 +185,12 @@ func RefreshToken(sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 		refreshToken, err := c.Cookie(refreshCookieName)
 		if err != nil || refreshToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Missing refresh token"})
+			return
+		}
+
+		csrfToken, err := authservices.GenerateCSRFToken()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not refresh session"})
 			return
 		}
 
@@ -213,7 +226,7 @@ func RefreshToken(sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 			return
 		}
 
-		setAuthCookies(c, accessToken, session.RefreshToken, secureCookies)
+		setAuthCookies(c, accessToken, session.RefreshToken, csrfToken, secureCookies)
 
 		c.JSON(http.StatusOK, authSchemas.SessionResponse{
 			ExpiresIn: int(authservices.AccessTime.Seconds()),
@@ -246,6 +259,7 @@ func setAuthCookies(
 	c *gin.Context,
 	accessToken string,
 	refreshToken string,
+	csrfToken string,
 	secure bool,
 ) {
 	c.SetSameSite(http.SameSiteLaxMode)
@@ -267,10 +281,20 @@ func setAuthCookies(
 		secure,
 		true,
 	)
+	c.SetCookie(
+		authservices.CSRFCookieName,
+		csrfToken,
+		int(authservices.RefreshTime.Seconds()),
+		csrfCookiePath,
+		"",
+		secure,
+		false,
+	)
 }
 
 func clearAuthCookies(c *gin.Context, secure bool) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie(accessCookieName, "", -1, "/", "", secure, true)
 	c.SetCookie(refreshCookieName, "", -1, refreshCookiePath, "", secure, true)
+	c.SetCookie(authservices.CSRFCookieName, "", -1, csrfCookiePath, "", secure, false)
 }
