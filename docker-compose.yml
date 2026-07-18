@@ -61,6 +61,18 @@ services:
       mc mb --ignore-existing local/synctex-dev
       "
 
+  migrate:
+    profiles: ["full"]
+    build: ./apps/api
+    command: ["goose", "-dir", "migrations", "up"]
+    environment:
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: postgres://synctex:synctex@postgres:5432/synctex
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   api:
     profiles: ["full"]
     build: ./apps/api
@@ -77,6 +89,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       minio-init:
         condition: service_completed_successfully
     healthcheck:
