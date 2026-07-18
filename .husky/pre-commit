@@ -6,14 +6,11 @@ cd "$repo_root"
 
 git diff --cached --check
 
-changed_go_files="$(git diff --cached --name-only --diff-filter=ACMR -- '*.go')"
-if [ -n "$changed_go_files" ]; then
-  unformatted="$(gofmt -l $changed_go_files)"
-  if [ -n "$unformatted" ]; then
-    echo "The following staged Go files need gofmt:"
-    echo "$unformatted"
-    exit 1
-  fi
+unformatted="$(cd apps/api && gofmt -l .)"
+if [ -n "$unformatted" ]; then
+  echo "The following Go files need gofmt:"
+  echo "$unformatted"
+  exit 1
 fi
 
 (cd apps/api && go vet ./...)

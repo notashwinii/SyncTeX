@@ -100,16 +100,18 @@ func GetProject(pool *pgxpool.Pool) gin.HandlerFunc {
 			}
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
+		}
+		row := pool.QueryRow(c, projectQueries.Q.GetProjectByID, id)
+		var p projectSchemas.Project
+		if err := row.Scan(&p.ID, &p.WorkspaceID, &p.Title, &p.CreatedAt, &p.UpdatedAt); err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"message": "project not found"})
+			return
+		}
+		c.JSON(http.StatusOK, p)
 	}
-	row := pool.QueryRow(c, projectQueries.Q.GetProjectByID, id)
-	var p projectSchemas.Project
-	if err := row.Scan(&p.ID, &p.WorkspaceID, &p.Title, &p.CreatedAt, &p.UpdatedAt); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "project not found"})
-		return
-	}
-	c.JSON(http.StatusOK, p)
 }
-}// DeleteProject godoc
+
+// DeleteProject godoc
 // @Summary Delete project by id
 // @Tags projects
 // @Security BearerAuth

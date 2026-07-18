@@ -38,7 +38,7 @@ func (e *EmailService) SendEmail(to, subject, htmlBody string) error {
 	}
 
 	from := fmt.Sprintf("%s <%s>", e.FromName, e.SMTPUser)
-	
+
 	// Build email headers and body
 	msg := []byte(fmt.Sprintf(
 		"From: %s\r\n"+
@@ -76,7 +76,7 @@ type InvitationEmailData struct {
 // SendInvitationEmail sends a workspace invitation email
 func (e *EmailService) SendInvitationEmail(to string, data InvitationEmailData) error {
 	subject := fmt.Sprintf("You've been invited to join %s on SyncTeX", data.WorkspaceName)
-	
+
 	htmlTemplate := `
 <!DOCTYPE html>
 <html>

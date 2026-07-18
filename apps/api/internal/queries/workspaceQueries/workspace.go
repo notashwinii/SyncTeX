@@ -1,12 +1,12 @@
 package workspaceQueries
 
 type Queries struct {
-	CreateWorkspace         string
-	ListMyWorkspaces        string
-	GetWorkspaceByID        string
-	AddWorkspaceMember      string
-	ListWorkspaceMembers    string
-	CheckUserWorkspaceRole  string
+	CreateWorkspace        string
+	ListMyWorkspaces       string
+	GetWorkspaceByID       string
+	AddWorkspaceMember     string
+	ListWorkspaceMembers   string
+	CheckUserWorkspaceRole string
 }
 
 var Q = Queries{
