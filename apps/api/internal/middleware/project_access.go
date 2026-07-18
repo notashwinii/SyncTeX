@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
@@ -8,6 +9,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/synctex-org/backend/internal/db"
 )
+
+type projectAccessQuerier interface {
+	UserCanAccessProject(
+		context.Context,
+		db.UserCanAccessProjectParams,
+	) (bool, error)
+}
 
 func RequireProjectAccess(pool *pgxpool.Pool, parameter string) gin.HandlerFunc {
 	queries := db.New(pool)
@@ -36,7 +44,11 @@ func RequireObjectProjectAccess(pool *pgxpool.Pool) gin.HandlerFunc {
 	}
 }
 
-func userCanAccessProject(c *gin.Context, queries db.Querier, projectID string) bool {
+func userCanAccessProject(
+	c *gin.Context,
+	queries projectAccessQuerier,
+	projectID string,
+) bool {
 	if projectID == "" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "missing project id"})
 		return false

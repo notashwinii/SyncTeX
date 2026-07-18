@@ -3,7 +3,6 @@ package authHandlers
 import (
 	"context"
 	"errors"
-
 	"log"
 	"net/http"
 	"strings"
@@ -20,6 +19,18 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
+
+const (
+	accessCookieName  = "token"
+	refreshCookieName = "refresh_token"
+	refreshCookiePath = "/api/auth"
+)
+
+type sessionManager interface {
+	Issue(context.Context, string, string, string) (authservices.RotatedSession, error)
+	Rotate(context.Context, string, string, string) (authservices.RotatedSession, error)
+	Revoke(context.Context, string) error
+}
 
 // Register godoc
 // @Summary Register a new user
@@ -51,6 +62,9 @@ func Register(pool *pgxpool.Pool) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error validating password"})
 			return
 		}
+
+		request.Email = strings.ToLower(strings.TrimSpace(request.Email))
+		request.Username = strings.TrimSpace(request.Username)
 
 		ctx := c.Request.Context()
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
@@ -93,12 +107,12 @@ func Register(pool *pgxpool.Pool) gin.HandlerFunc {
 // @Accept json
 // @Produce json
 // @Param request body authSchemas.LoginRequest true "User login data"
-// @Success 200 {object} map[string]string
+// @Success 200 {object} authSchemas.SessionResponse
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /auth/login [post]
-func Login(pool *pgxpool.Pool) gin.HandlerFunc {
+func Login(pool *pgxpool.Pool, sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req authSchemas.LoginRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -106,10 +120,14 @@ func Login(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 		defer cancel()
 
-		user, err := authservices.GetUserByEmail(ctx, pool, req.Email)
+		user, err := authservices.GetUserByEmail(
+			ctx,
+			pool,
+			strings.ToLower(strings.TrimSpace(req.Email)),
+		)
 		if err != nil {
 			errorhandler.HandleUserRetrievalError(c, err)
 			return
@@ -120,43 +138,27 @@ func Login(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		accessToken, err := authservices.GenerateAccessToken(user.ID, user.UserName)
+		session, err := sessions.Issue(ctx, user.ID, c.Request.UserAgent(), c.ClientIP())
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not generate access token"})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create session"})
 			return
 		}
 
-		refreshToken, err := authservices.GenerateRefreshToken(user.ID, user.UserName)
+		accessToken, err := authservices.GenerateAccessToken(
+			user.ID,
+			user.UserName,
+			session.SessionID,
+		)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not generate refresh token"})
+			_ = sessions.Revoke(ctx, session.RefreshToken)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create session"})
 			return
 		}
 
-		c.SetCookie(
-			"token",
-			accessToken,
-			int(authservices.AccessTime.Seconds()),
-			"/",
-			"",
-			true,
-			true,
-		)
+		setAuthCookies(c, accessToken, session.RefreshToken, secureCookies)
 
-		c.SetCookie(
-			"refresh_token",
-			refreshToken,
-			int(authservices.RefreshTime.Seconds()),
-			"/",
-			"",
-			true,
-			true,
-		)
-
-		c.JSON(http.StatusOK, authSchemas.TokenResponse{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-			TokenType:    "Bearer",
-			ExpiresIn:    int(authservices.AccessTime.Seconds()),
+		c.JSON(http.StatusOK, authSchemas.SessionResponse{
+			ExpiresIn: int(authservices.AccessTime.Seconds()),
 		})
 	}
 }
@@ -165,57 +167,56 @@ func Login(pool *pgxpool.Pool) gin.HandlerFunc {
 // @Summary Refresh access token
 // @Description Refresh access token using refresh token
 // @Tags auth
-// @Accept json
 // @Produce json
-// @Param request body authSchemas.RefreshRequest true "Refresh token data"
-// @Success 200 {object} authSchemas.TokenResponse
+// @Success 200 {object} authSchemas.SessionResponse
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /auth/refresh [post]
-func RefreshToken(pool *pgxpool.Pool) gin.HandlerFunc {
+func RefreshToken(sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Try to obtain refresh token from cookie first (preferred, httpOnly)
-		refreshToken, err := c.Cookie("refresh_token")
-
-		// If cookie not present, allow a JSON body fallback (useful for clients that
-		// store refresh tokens in storage and post them explicitly).
+		refreshToken, err := c.Cookie(refreshCookieName)
 		if err != nil || refreshToken == "" {
-			var req authSchemas.RefreshRequest
-			if bindErr := c.ShouldBindJSON(&req); bindErr != nil || req.RefreshToken == "" {
-				c.JSON(http.StatusUnauthorized, gin.H{"message": "Missing refresh token"})
-				return
-			}
-			refreshToken = req.RefreshToken
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Missing refresh token"})
+			return
 		}
 
-		claims, err := authservices.ValidateRefreshToken(refreshToken)
+		session, err := sessions.Rotate(
+			c.Request.Context(),
+			refreshToken,
+			c.Request.UserAgent(),
+			c.ClientIP(),
+		)
 		if err != nil {
+			if errors.Is(err, authservices.ErrSessionCompromised) {
+				clearAuthCookies(c, secureCookies)
+				c.JSON(
+					http.StatusUnauthorized,
+					gin.H{
+						"code":    "SESSION_COMPROMISED",
+						"message": "Session revoked after refresh token reuse",
+					},
+				)
+				return
+			}
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid or expired refresh token"})
 			return
 		}
 
-		accessToken, err := authservices.GenerateAccessToken(claims.UserID, claims.Username)
+		accessToken, err := authservices.GenerateAccessToken(
+			session.UserID,
+			session.Username,
+			session.SessionID,
+		)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not generate access token"})
 			return
 		}
 
-		c.SetCookie(
-			"token",
-			accessToken,
-			int(authservices.AccessTime.Seconds()),
-			"/",
-			"",
-			true,
-			true,
-		)
+		setAuthCookies(c, accessToken, session.RefreshToken, secureCookies)
 
-		c.JSON(http.StatusOK, authSchemas.TokenResponse{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-			TokenType:    "Bearer",
-			ExpiresIn:    int(authservices.AccessTime.Seconds()),
+		c.JSON(http.StatusOK, authSchemas.SessionResponse{
+			ExpiresIn: int(authservices.AccessTime.Seconds()),
 		})
 	}
 }
@@ -228,28 +229,48 @@ func RefreshToken(pool *pgxpool.Pool) gin.HandlerFunc {
 // @Produce json
 // @Success 200 {object} map[string]string
 // @Router /auth/logout [post]
-func Logout() gin.HandlerFunc {
+func Logout(sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.SetCookie(
-			"token",
-			"",
-			-1,
-			"/",
-			"",
-			true,
-			true,
-		)
+		refreshToken, _ := c.Cookie(refreshCookieName)
+		if err := sessions.Revoke(c.Request.Context(), refreshToken); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not revoke session"})
+			return
+		}
 
-		c.SetCookie(
-			"refresh_token",
-			"",
-			-1,
-			"/",
-			"",
-			true,
-			true,
-		)
-
+		clearAuthCookies(c, secureCookies)
 		c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 	}
+}
+
+func setAuthCookies(
+	c *gin.Context,
+	accessToken string,
+	refreshToken string,
+	secure bool,
+) {
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie(
+		accessCookieName,
+		accessToken,
+		int(authservices.AccessTime.Seconds()),
+		"/",
+		"",
+		secure,
+		true,
+	)
+	c.SetCookie(
+		refreshCookieName,
+		refreshToken,
+		int(authservices.RefreshTime.Seconds()),
+		refreshCookiePath,
+		"",
+		secure,
+		true,
+	)
+}
+
+func clearAuthCookies(c *gin.Context, secure bool) {
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie(accessCookieName, "", -1, "/", "", secure, true)
+	c.SetCookie(refreshCookieName, "", -1, refreshCookiePath, "", secure, true)
 }

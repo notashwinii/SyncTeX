@@ -8,7 +8,7 @@ import (
 var requiredEnvironment = map[string]string{
 	"DB_URI":          "postgres://localhost/synctex",
 	"JWT_KEY":         "access-secret",
-	"REFRESH_KEY":     "refresh-secret",
+	"COOKIE_SECURE":   "false",
 	"FRONTEND_ORIGIN": "http://localhost:3000",
 	"B2_ENDPOINT":     "http://localhost:9000",
 	"B2_ACCESS_KEY":   "access-key",
@@ -50,10 +50,25 @@ func TestLoadEnvironmentParsesOptionalSettings(t *testing.T) {
 	if environment.Port != defaultPort {
 		t.Errorf("Port = %q, want %q", environment.Port, defaultPort)
 	}
+	if environment.SecureCookies {
+		t.Error("SecureCookies = true, want false")
+	}
 	if len(environment.FrontendOrigins) != 2 {
 		t.Errorf("FrontendOrigins = %#v, want two origins", environment.FrontendOrigins)
 	}
 	if len(environment.TrustedProxies) != 2 {
 		t.Errorf("TrustedProxies = %#v, want two proxies", environment.TrustedProxies)
+	}
+}
+
+func TestLoadEnvironmentRejectsInvalidCookieSecure(t *testing.T) {
+	for name, value := range requiredEnvironment {
+		t.Setenv(name, value)
+	}
+	t.Setenv("COOKIE_SECURE", "sometimes")
+
+	_, err := LoadEnvironment()
+	if err == nil || !strings.Contains(err.Error(), "COOKIE_SECURE") {
+		t.Fatalf("LoadEnvironment() error = %v, want COOKIE_SECURE validation error", err)
 	}
 }

@@ -9,6 +9,14 @@ import (
 )
 
 type Querier interface {
+	ClaimAuthSessionGraceReuse(ctx context.Context, arg ClaimAuthSessionGraceReuseParams) (int64, error)
+	ConsumeAuthSession(ctx context.Context, arg ConsumeAuthSessionParams) (int64, error)
+	CreateAuthSession(ctx context.Context, arg CreateAuthSessionParams) (CreateAuthSessionRow, error)
+	CreateRotatedAuthSession(ctx context.Context, arg CreateRotatedAuthSessionParams) (string, error)
+	GetAuthSessionByTokenHashForUpdate(ctx context.Context, tokenHash []byte) (GetAuthSessionByTokenHashForUpdateRow, error)
+	RevokeAuthSessionFamily(ctx context.Context, arg RevokeAuthSessionFamilyParams) error
+	RevokeAuthSessionFamilyByTokenHash(ctx context.Context, arg RevokeAuthSessionFamilyByTokenHashParams) error
+	RevokeUserAuthSessions(ctx context.Context, arg RevokeUserAuthSessionsParams) error
 	UserCanAccessProject(ctx context.Context, arg UserCanAccessProjectParams) (bool, error)
 }
 

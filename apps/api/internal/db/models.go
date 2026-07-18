@@ -8,6 +8,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AuthSession struct {
+	ID              pgtype.UUID
+	FamilyID        pgtype.UUID
+	UserID          pgtype.UUID
+	ParentID        pgtype.UUID
+	TokenHash       []byte
+	ConsumedAt      pgtype.Timestamptz
+	GraceExpiresAt  pgtype.Timestamptz
+	GraceReuseCount int16
+	ExpiresAt       pgtype.Timestamptz
+	RevokedAt       pgtype.Timestamptz
+	UserAgent       string
+	IpAddress       string
+	CreatedAt       pgtype.Timestamptz
+}
+
 type Collaboration struct {
 	ID        pgtype.UUID
 	SessionID pgtype.UUID

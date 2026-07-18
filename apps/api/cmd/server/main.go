@@ -34,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	authservices.Configure(environment.JWTKey, environment.RefreshKey)
+	authservices.Configure(environment.JWTKey)
 
 	pool, err := db.Connect(context.Background(), environment.DBURI)
 	if err != nil {
@@ -59,6 +59,7 @@ func main() {
 	r, err := router.SetupRouter(pool, storageService, router.Options{
 		AllowedOrigins: environment.FrontendOrigins,
 		TrustedProxies: environment.TrustedProxies,
+		SecureCookies:  environment.SecureCookies,
 	})
 	if err != nil {
 		log.Fatal(err)

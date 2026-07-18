@@ -22,12 +22,14 @@ import (
 	"github.com/synctex-org/backend/internal/handlers/websocket"
 	"github.com/synctex-org/backend/internal/handlers/workspaceHandlers"
 	"github.com/synctex-org/backend/internal/middleware"
+	authservices "github.com/synctex-org/backend/internal/services/authServices"
 	storageServices "github.com/synctex-org/backend/internal/services/storageService"
 )
 
 type Options struct {
 	AllowedOrigins []string
 	TrustedProxies []string
+	SecureCookies  bool
 }
 
 type databaseHealthChecker interface {
@@ -47,6 +49,7 @@ func SetupRouter(
 
 	fileService := storageServices.NewFileService(pool)
 	storageHandler := storageHandlers.NewHandler(s3, fileService)
+	sessionManager := authservices.NewSessionManager(pool)
 
 	config := cors.Config{
 		AllowOrigins:     options.AllowedOrigins,
@@ -74,9 +77,9 @@ func SetupRouter(
 	// Public auth routes
 	auth := api.Group("/auth")
 	auth.POST("/register", authHandlers.Register(pool))
-	auth.POST("/login", authHandlers.Login(pool))
-	auth.POST("/refresh", authHandlers.RefreshToken(pool))
-	auth.POST("/logout", authHandlers.Logout())
+	auth.POST("/login", authHandlers.Login(pool, sessionManager, options.SecureCookies))
+	auth.POST("/refresh", authHandlers.RefreshToken(sessionManager, options.SecureCookies))
+	auth.POST("/logout", authHandlers.Logout(sessionManager, options.SecureCookies))
 
 	// Authenticated routes
 	secured := api.Group("")

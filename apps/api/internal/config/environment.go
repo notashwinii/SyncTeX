@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -12,7 +13,7 @@ const defaultPort = "8080"
 type Environment struct {
 	DBURI           string
 	JWTKey          string
-	RefreshKey      string
+	SecureCookies   bool
 	Port            string
 	FrontendOrigins []string
 	TrustedProxies  []string
@@ -27,7 +28,7 @@ func LoadEnvironment() (Environment, error) {
 	required := map[string]string{
 		"DB_URI":          strings.TrimSpace(os.Getenv("DB_URI")),
 		"JWT_KEY":         strings.TrimSpace(os.Getenv("JWT_KEY")),
-		"REFRESH_KEY":     strings.TrimSpace(os.Getenv("REFRESH_KEY")),
+		"COOKIE_SECURE":   strings.TrimSpace(os.Getenv("COOKIE_SECURE")),
 		"FRONTEND_ORIGIN": strings.TrimSpace(os.Getenv("FRONTEND_ORIGIN")),
 		"B2_ENDPOINT":     strings.TrimSpace(os.Getenv("B2_ENDPOINT")),
 		"B2_ACCESS_KEY":   strings.TrimSpace(os.Getenv("B2_ACCESS_KEY")),
@@ -50,6 +51,11 @@ func LoadEnvironment() (Environment, error) {
 		)
 	}
 
+	secureCookies, err := strconv.ParseBool(required["COOKIE_SECURE"])
+	if err != nil {
+		return Environment{}, fmt.Errorf("COOKIE_SECURE must be true or false")
+	}
+
 	port := strings.TrimSpace(os.Getenv("PORT"))
 	if port == "" {
 		port = defaultPort
@@ -58,7 +64,7 @@ func LoadEnvironment() (Environment, error) {
 	return Environment{
 		DBURI:           required["DB_URI"],
 		JWTKey:          required["JWT_KEY"],
-		RefreshKey:      required["REFRESH_KEY"],
+		SecureCookies:   secureCookies,
 		Port:            port,
 		FrontendOrigins: splitCommaSeparated(required["FRONTEND_ORIGIN"]),
 		TrustedProxies:  splitCommaSeparated(os.Getenv("TRUSTED_PROXIES")),
