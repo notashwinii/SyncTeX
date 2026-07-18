@@ -1,6 +1,9 @@
 run:
 	air
 
+sqlc-generate:
+	docker run --rm -v "$(CURDIR):/src" -w /src sqlc/sqlc:1.31.1 generate
+
 migrate-new:
 	@test -n "$(name)" || (echo "Usage: make migrate-new name=add_table" && exit 1)
 	goose -dir migrations create $(name) sql

@@ -30,6 +30,11 @@ jobs:
         with:
           go-version: "1.24"
           cache-dependency-path: apps/api/go.sum
+      - name: Generated queries
+        working-directory: .
+        run: |
+          docker run --rm -v "$PWD/apps/api:/src" -w /src sqlc/sqlc:1.31.1 generate
+          git diff --exit-code -- apps/api/internal/db
       - name: Format
         run: test -z "$(gofmt -l .)"
       - name: Build
