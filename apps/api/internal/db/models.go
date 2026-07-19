@@ -5,8 +5,53 @@
 package db
 
 import (
+	"database/sql/driver"
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type UserTokenPurpose string
+
+const (
+	UserTokenPurposeVerifyEmail   UserTokenPurpose = "verify_email"
+	UserTokenPurposeResetPassword UserTokenPurpose = "reset_password"
+)
+
+func (e *UserTokenPurpose) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = UserTokenPurpose(s)
+	case string:
+		*e = UserTokenPurpose(s)
+	default:
+		return fmt.Errorf("unsupported scan type for UserTokenPurpose: %T", src)
+	}
+	return nil
+}
+
+type NullUserTokenPurpose struct {
+	UserTokenPurpose UserTokenPurpose
+	Valid            bool // Valid is true if UserTokenPurpose is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullUserTokenPurpose) Scan(value interface{}) error {
+	if value == nil {
+		ns.UserTokenPurpose, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.UserTokenPurpose.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullUserTokenPurpose) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.UserTokenPurpose), nil
+}
 
 type AuthSession struct {
 	ID              pgtype.UUID
@@ -66,11 +111,22 @@ type Snapshot struct {
 }
 
 type User struct {
-	ID             pgtype.UUID
-	Username       string
-	Email          string
-	HashedPassword string
-	CreatedAt      pgtype.Timestamptz
+	ID              pgtype.UUID
+	Username        string
+	Email           string
+	HashedPassword  string
+	CreatedAt       pgtype.Timestamptz
+	EmailVerifiedAt pgtype.Timestamptz
+}
+
+type UserToken struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Purpose   UserTokenPurpose
+	TokenHash []byte
+	ExpiresAt pgtype.Timestamptz
+	UsedAt    pgtype.Timestamptz
+	CreatedAt pgtype.Timestamptz
 }
 
 type Workspace struct {

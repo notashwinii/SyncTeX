@@ -13,11 +13,19 @@ type Querier interface {
 	ConsumeAuthSession(ctx context.Context, arg ConsumeAuthSessionParams) (int64, error)
 	CreateAuthSession(ctx context.Context, arg CreateAuthSessionParams) (CreateAuthSessionRow, error)
 	CreateRotatedAuthSession(ctx context.Context, arg CreateRotatedAuthSessionParams) (string, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (string, error)
+	CreateUserToken(ctx context.Context, arg CreateUserTokenParams) error
 	GetAuthSessionByTokenHashForUpdate(ctx context.Context, tokenHash []byte) (GetAuthSessionByTokenHashForUpdateRow, error)
 	GetAuthSessionFamilyByTokenHash(ctx context.Context, tokenHash []byte) (string, error)
+	GetUserIDByEmail(ctx context.Context, email string) (string, error)
+	GetUserTokenForUpdate(ctx context.Context, arg GetUserTokenForUpdateParams) (GetUserTokenForUpdateRow, error)
+	InvalidateUserTokens(ctx context.Context, arg InvalidateUserTokensParams) error
+	MarkUserEmailVerified(ctx context.Context, arg MarkUserEmailVerifiedParams) error
+	MarkUserTokenUsed(ctx context.Context, arg MarkUserTokenUsedParams) error
 	RevokeAuthSessionFamily(ctx context.Context, arg RevokeAuthSessionFamilyParams) error
 	RevokeAuthSessionFamilyByTokenHash(ctx context.Context, arg RevokeAuthSessionFamilyByTokenHashParams) error
 	RevokeUserAuthSessions(ctx context.Context, arg RevokeUserAuthSessionsParams) error
+	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
 	UserCanAccessProject(ctx context.Context, arg UserCanAccessProjectParams) (bool, error)
 }
 
