@@ -14,6 +14,7 @@ type Querier interface {
 	CreateAuthSession(ctx context.Context, arg CreateAuthSessionParams) (CreateAuthSessionRow, error)
 	CreateRotatedAuthSession(ctx context.Context, arg CreateRotatedAuthSessionParams) (string, error)
 	GetAuthSessionByTokenHashForUpdate(ctx context.Context, tokenHash []byte) (GetAuthSessionByTokenHashForUpdateRow, error)
+	GetAuthSessionFamilyByTokenHash(ctx context.Context, tokenHash []byte) (string, error)
 	RevokeAuthSessionFamily(ctx context.Context, arg RevokeAuthSessionFamilyParams) error
 	RevokeAuthSessionFamilyByTokenHash(ctx context.Context, arg RevokeAuthSessionFamilyByTokenHashParams) error
 	RevokeUserAuthSessions(ctx context.Context, arg RevokeUserAuthSessionsParams) error

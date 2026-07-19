@@ -116,7 +116,7 @@ func Register(pool *pgxpool.Pool) gin.HandlerFunc {
 func Login(pool *pgxpool.Pool, sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req authSchemas.LoginRequest
-		if err := c.ShouldBindJSON(&req); err != nil {
+		if err := c.ShouldBindBodyWithJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Provide valid login payload"})
 			return
 		}

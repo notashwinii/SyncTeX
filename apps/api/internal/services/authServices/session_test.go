@@ -15,6 +15,8 @@ import (
 type sessionStoreStub struct {
 	createParams db.CreateAuthSessionParams
 	createResult db.CreateAuthSessionRow
+	familyID     string
+	familyErr    error
 	queries      *sessionQueriesStub
 	revokeParams db.RevokeAuthSessionFamilyByTokenHashParams
 }
@@ -32,6 +34,13 @@ func (store *sessionStoreStub) InTransaction(
 	run func(sessionQueries) error,
 ) error {
 	return run(store.queries)
+}
+
+func (store *sessionStoreStub) GetAuthSessionFamilyByTokenHash(
+	_ context.Context,
+	_ []byte,
+) (string, error) {
+	return store.familyID, store.familyErr
 }
 
 func (store *sessionStoreStub) RevokeAuthSessionFamilyByTokenHash(
@@ -245,6 +254,19 @@ func TestSessionManagerRotateRejectsUnknownToken(t *testing.T) {
 	)
 	if !errors.Is(err, ErrInvalidRefreshToken) {
 		t.Fatalf("Rotate() error = %v, want ErrInvalidRefreshToken", err)
+	}
+}
+
+func TestSessionManagerFamilyID(t *testing.T) {
+	store := &sessionStoreStub{familyID: "family-id"}
+	manager := newSessionManager(store)
+
+	familyID, err := manager.FamilyID(context.Background(), "refresh-token")
+	if err != nil {
+		t.Fatalf("FamilyID() error = %v", err)
+	}
+	if familyID != "family-id" {
+		t.Fatalf("FamilyID() = %q, want family-id", familyID)
 	}
 }
 

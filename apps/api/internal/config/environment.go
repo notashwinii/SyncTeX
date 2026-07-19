@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const defaultPort = "8080"
@@ -22,6 +23,20 @@ type Environment struct {
 	S3SecretKey     string
 	S3Region        string
 	S3Bucket        string
+	RedisURL        string
+	AuthRateLimits  AuthRateLimits
+}
+
+type RateLimit struct {
+	Limit  int64
+	Window time.Duration
+}
+
+type AuthRateLimits struct {
+	LoginIP      RateLimit
+	LoginAccount RateLimit
+	RegisterIP   RateLimit
+	Refresh      RateLimit
 }
 
 func LoadEnvironment() (Environment, error) {
@@ -35,6 +50,31 @@ func LoadEnvironment() (Environment, error) {
 		"B2_SECRET_KEY":   strings.TrimSpace(os.Getenv("B2_SECRET_KEY")),
 		"B2_REGION":       strings.TrimSpace(os.Getenv("B2_REGION")),
 		"B2_BUCKET":       strings.TrimSpace(os.Getenv("B2_BUCKET")),
+		"REDIS_URL":       strings.TrimSpace(os.Getenv("REDIS_URL")),
+		"RATE_LOGIN_IP_LIMIT": strings.TrimSpace(
+			os.Getenv("RATE_LOGIN_IP_LIMIT"),
+		),
+		"RATE_LOGIN_IP_WINDOW": strings.TrimSpace(
+			os.Getenv("RATE_LOGIN_IP_WINDOW"),
+		),
+		"RATE_LOGIN_ACCOUNT_LIMIT": strings.TrimSpace(
+			os.Getenv("RATE_LOGIN_ACCOUNT_LIMIT"),
+		),
+		"RATE_LOGIN_ACCOUNT_WINDOW": strings.TrimSpace(
+			os.Getenv("RATE_LOGIN_ACCOUNT_WINDOW"),
+		),
+		"RATE_REGISTER_IP_LIMIT": strings.TrimSpace(
+			os.Getenv("RATE_REGISTER_IP_LIMIT"),
+		),
+		"RATE_REGISTER_IP_WINDOW": strings.TrimSpace(
+			os.Getenv("RATE_REGISTER_IP_WINDOW"),
+		),
+		"RATE_REFRESH_LIMIT": strings.TrimSpace(
+			os.Getenv("RATE_REFRESH_LIMIT"),
+		),
+		"RATE_REFRESH_WINDOW": strings.TrimSpace(
+			os.Getenv("RATE_REFRESH_WINDOW"),
+		),
 	}
 
 	var missing []string
@@ -56,6 +96,23 @@ func LoadEnvironment() (Environment, error) {
 		return Environment{}, fmt.Errorf("COOKIE_SECURE must be true or false")
 	}
 
+	loginIP, err := parseRateLimit(required, "RATE_LOGIN_IP")
+	if err != nil {
+		return Environment{}, err
+	}
+	loginAccount, err := parseRateLimit(required, "RATE_LOGIN_ACCOUNT")
+	if err != nil {
+		return Environment{}, err
+	}
+	registerIP, err := parseRateLimit(required, "RATE_REGISTER_IP")
+	if err != nil {
+		return Environment{}, err
+	}
+	refresh, err := parseRateLimit(required, "RATE_REFRESH")
+	if err != nil {
+		return Environment{}, err
+	}
+
 	port := strings.TrimSpace(os.Getenv("PORT"))
 	if port == "" {
 		port = defaultPort
@@ -73,6 +130,13 @@ func LoadEnvironment() (Environment, error) {
 		S3SecretKey:     required["B2_SECRET_KEY"],
 		S3Region:        required["B2_REGION"],
 		S3Bucket:        required["B2_BUCKET"],
+		RedisURL:        required["REDIS_URL"],
+		AuthRateLimits: AuthRateLimits{
+			LoginIP:      loginIP,
+			LoginAccount: loginAccount,
+			RegisterIP:   registerIP,
+			Refresh:      refresh,
+		},
 	}, nil
 }
 
@@ -84,4 +148,19 @@ func splitCommaSeparated(value string) []string {
 		}
 	}
 	return values
+}
+
+func parseRateLimit(values map[string]string, prefix string) (RateLimit, error) {
+	limitName := prefix + "_LIMIT"
+	windowName := prefix + "_WINDOW"
+
+	limit, err := strconv.ParseInt(values[limitName], 10, 64)
+	if err != nil || limit <= 0 {
+		return RateLimit{}, fmt.Errorf("%s must be a positive integer", limitName)
+	}
+	window, err := time.ParseDuration(values[windowName])
+	if err != nil || window <= 0 {
+		return RateLimit{}, fmt.Errorf("%s must be a positive duration", windowName)
+	}
+	return RateLimit{Limit: limit, Window: window}, nil
 }

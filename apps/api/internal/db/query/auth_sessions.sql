@@ -38,6 +38,13 @@ JOIN users AS app_user ON app_user.id = session.user_id
 WHERE session.token_hash = sqlc.arg(token_hash)
 FOR UPDATE OF session;
 
+-- name: GetAuthSessionFamilyByTokenHash :one
+SELECT family_id::text AS family_id
+FROM auth_sessions
+WHERE token_hash = sqlc.arg(token_hash)
+  AND revoked_at IS NULL
+  AND expires_at > now();
+
 -- name: ConsumeAuthSession :execrows
 UPDATE auth_sessions
 SET

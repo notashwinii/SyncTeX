@@ -202,6 +202,21 @@ func (q *Queries) GetAuthSessionByTokenHashForUpdate(ctx context.Context, tokenH
 	return i, err
 }
 
+const getAuthSessionFamilyByTokenHash = `-- name: GetAuthSessionFamilyByTokenHash :one
+SELECT family_id::text AS family_id
+FROM auth_sessions
+WHERE token_hash = $1
+  AND revoked_at IS NULL
+  AND expires_at > now()
+`
+
+func (q *Queries) GetAuthSessionFamilyByTokenHash(ctx context.Context, tokenHash []byte) (string, error) {
+	row := q.db.QueryRow(ctx, getAuthSessionFamilyByTokenHash, tokenHash)
+	var family_id string
+	err := row.Scan(&family_id)
+	return family_id, err
+}
+
 const revokeAuthSessionFamily = `-- name: RevokeAuthSessionFamily :exec
 UPDATE auth_sessions AS target
 SET revoked_at = COALESCE(target.revoked_at, $1)

@@ -21,6 +21,7 @@ import (
 	"github.com/synctex-org/backend/internal/config/db"
 	"github.com/synctex-org/backend/internal/router"
 	authservices "github.com/synctex-org/backend/internal/services/authServices"
+	ratelimitservices "github.com/synctex-org/backend/internal/services/rateLimitServices"
 	storage "github.com/synctex-org/backend/internal/services/storageService"
 )
 
@@ -35,6 +36,12 @@ func main() {
 	}
 
 	authservices.Configure(environment.JWTKey)
+
+	rateLimiter, err := ratelimitservices.New(environment.RedisURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rateLimiter.Close()
 
 	pool, err := db.Connect(context.Background(), environment.DBURI)
 	if err != nil {
@@ -60,6 +67,8 @@ func main() {
 		AllowedOrigins: environment.FrontendOrigins,
 		TrustedProxies: environment.TrustedProxies,
 		SecureCookies:  environment.SecureCookies,
+		RateLimiter:    rateLimiter,
+		AuthRateLimits: environment.AuthRateLimits,
 	})
 	if err != nil {
 		log.Fatal(err)

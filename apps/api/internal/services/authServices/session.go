@@ -42,6 +42,7 @@ type sessionQueries interface {
 
 type sessionStore interface {
 	CreateAuthSession(context.Context, db.CreateAuthSessionParams) (db.CreateAuthSessionRow, error)
+	GetAuthSessionFamilyByTokenHash(context.Context, []byte) (string, error)
 	InTransaction(context.Context, func(sessionQueries) error) error
 	RevokeAuthSessionFamilyByTokenHash(context.Context, db.RevokeAuthSessionFamilyByTokenHashParams) error
 }
@@ -60,6 +61,13 @@ func (store *pgSessionStore) CreateAuthSession(
 	params db.CreateAuthSessionParams,
 ) (db.CreateAuthSessionRow, error) {
 	return store.queries.CreateAuthSession(ctx, params)
+}
+
+func (store *pgSessionStore) GetAuthSessionFamilyByTokenHash(
+	ctx context.Context,
+	tokenHash []byte,
+) (string, error) {
+	return store.queries.GetAuthSessionFamilyByTokenHash(ctx, tokenHash)
 }
 
 func (store *pgSessionStore) RevokeAuthSessionFamilyByTokenHash(
@@ -257,6 +265,27 @@ func (manager *SessionManager) Revoke(ctx context.Context, refreshToken string) 
 			PresentedTokenHash: hashRefreshToken(refreshToken),
 		},
 	)
+}
+
+func (manager *SessionManager) FamilyID(
+	ctx context.Context,
+	refreshToken string,
+) (string, error) {
+	if refreshToken == "" {
+		return "", ErrInvalidRefreshToken
+	}
+
+	familyID, err := manager.store.GetAuthSessionFamilyByTokenHash(
+		ctx,
+		hashRefreshToken(refreshToken),
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", ErrInvalidRefreshToken
+	}
+	if err != nil {
+		return "", fmt.Errorf("get auth session family: %w", err)
+	}
+	return familyID, nil
 }
 
 func generateOpaqueToken() (string, error) {

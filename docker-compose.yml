@@ -83,6 +83,7 @@ services:
         required: false
     environment:
       DB_URI: postgres://synctex:synctex@postgres:5432/synctex
+      REDIS_URL: redis://redis:6379/0
       B2_ENDPOINT: http://minio:9000
       FRONTEND_ORIGIN: ${SYNCTEX_ORIGIN:-http://localhost:3000}
     expose:

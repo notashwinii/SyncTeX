@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	appconfig "github.com/synctex-org/backend/internal/config"
 	"github.com/synctex-org/backend/internal/handlers/authHandlers"
 	"github.com/synctex-org/backend/internal/handlers/downloadHandlers"
 	"github.com/synctex-org/backend/internal/handlers/projectHandlers"
@@ -30,6 +31,8 @@ type Options struct {
 	AllowedOrigins []string
 	TrustedProxies []string
 	SecureCookies  bool
+	RateLimiter    middleware.RateLimiter
+	AuthRateLimits appconfig.AuthRateLimits
 }
 
 type databaseHealthChecker interface {
@@ -82,13 +85,63 @@ func SetupRouter(
 
 	// Public auth routes
 	auth := api.Group("/auth")
-	auth.POST("/register", authHandlers.Register(pool))
-	auth.POST("/login", authHandlers.Login(pool, sessionManager, options.SecureCookies))
-	auth.POST(
-		"/refresh",
-		middleware.RequireCSRF(),
+	registerHandlers := rateLimitedHandlers(
+		options.RateLimiter,
+		middleware.RateLimit{
+			Scope:    "auth-register-ip",
+			Limit:    options.AuthRateLimits.RegisterIP.Limit,
+			Window:   options.AuthRateLimits.RegisterIP.Window,
+			Identity: middleware.ClientIPIdentity,
+		},
+	)
+	registerHandlers = append(registerHandlers, authHandlers.Register(pool))
+	auth.POST("/register", registerHandlers...)
+
+	loginHandlers := rateLimitedHandlers(
+		options.RateLimiter,
+		middleware.RateLimit{
+			Scope:    "auth-login-ip",
+			Limit:    options.AuthRateLimits.LoginIP.Limit,
+			Window:   options.AuthRateLimits.LoginIP.Window,
+			Identity: middleware.ClientIPIdentity,
+		},
+		middleware.RateLimit{
+			Scope:    "auth-login-account",
+			Limit:    options.AuthRateLimits.LoginAccount.Limit,
+			Window:   options.AuthRateLimits.LoginAccount.Window,
+			Identity: middleware.JSONStringIdentity("email"),
+		},
+	)
+	loginHandlers = append(
+		loginHandlers,
+		authHandlers.Login(pool, sessionManager, options.SecureCookies),
+	)
+	auth.POST("/login", loginHandlers...)
+
+	refreshHandlers := []gin.HandlerFunc{middleware.RequireCSRF()}
+	refreshHandlers = append(
+		refreshHandlers,
+		rateLimitedHandlers(
+			options.RateLimiter,
+			middleware.RateLimit{
+				Scope:  "auth-refresh-session",
+				Limit:  options.AuthRateLimits.Refresh.Limit,
+				Window: options.AuthRateLimits.Refresh.Window,
+				Identity: func(c *gin.Context) (string, error) {
+					refreshToken, err := c.Cookie("refresh_token")
+					if err != nil {
+						return "", err
+					}
+					return sessionManager.FamilyID(c.Request.Context(), refreshToken)
+				},
+			},
+		)...,
+	)
+	refreshHandlers = append(
+		refreshHandlers,
 		authHandlers.RefreshToken(sessionManager, options.SecureCookies),
 	)
+	auth.POST("/refresh", refreshHandlers...)
 	auth.POST(
 		"/logout",
 		middleware.RequireCSRF(),
@@ -152,6 +205,21 @@ func SetupRouter(
 	secured.POST("/sessions/:id/end", sessionHandlers.EndSession(pool))
 
 	return r, nil
+}
+
+func rateLimitedHandlers(
+	limiter middleware.RateLimiter,
+	limits ...middleware.RateLimit,
+) []gin.HandlerFunc {
+	if limiter == nil {
+		return nil
+	}
+
+	handlers := make([]gin.HandlerFunc, 0, len(limits))
+	for _, limit := range limits {
+		handlers = append(handlers, middleware.EnforceRateLimit(limiter, limit))
+	}
+	return handlers
 }
 
 func livenessHandler() gin.HandlerFunc {
