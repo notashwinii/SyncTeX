@@ -17,8 +17,8 @@ func TestSetAuthCookies(t *testing.T) {
 	setAuthCookies(context, "access", "refresh", "csrf", true)
 
 	cookies := recorder.Result().Cookies()
-	if len(cookies) != 3 {
-		t.Fatalf("cookie count = %d, want 3", len(cookies))
+	if len(cookies) != 4 {
+		t.Fatalf("cookie count = %d, want 4", len(cookies))
 	}
 
 	byName := make(map[string]*http.Cookie, len(cookies))
@@ -32,10 +32,12 @@ func TestSetAuthCookies(t *testing.T) {
 		}
 	}
 
-	if cookie := byName[accessCookieName]; cookie == nil || !cookie.HttpOnly || cookie.Path != "/" {
+	if cookie := byName[authservices.AccessCookieName]; cookie == nil ||
+		!cookie.HttpOnly ||
+		cookie.Path != "/" {
 		t.Errorf("access cookie = %#v", cookie)
 	}
-	if cookie := byName[refreshCookieName]; cookie == nil ||
+	if cookie := byName[authservices.RefreshCookieName]; cookie == nil ||
 		!cookie.HttpOnly ||
 		cookie.Path != refreshCookiePath {
 		t.Errorf("refresh cookie = %#v", cookie)
@@ -44,5 +46,11 @@ func TestSetAuthCookies(t *testing.T) {
 		cookie.HttpOnly ||
 		cookie.Path != csrfCookiePath {
 		t.Errorf("CSRF cookie = %#v", cookie)
+	}
+	if cookie := byName[authservices.SessionCookieName]; cookie == nil ||
+		!cookie.HttpOnly ||
+		cookie.Path != "/" ||
+		cookie.Value != "active" {
+		t.Errorf("session marker cookie = %#v", cookie)
 	}
 }

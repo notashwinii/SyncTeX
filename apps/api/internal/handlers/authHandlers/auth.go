@@ -20,8 +20,6 @@ import (
 )
 
 const (
-	accessCookieName  = "token"
-	refreshCookieName = "refresh_token"
 	refreshCookiePath = "/api/auth"
 	csrfCookiePath    = "/"
 )
@@ -217,7 +215,7 @@ func Login(pool *pgxpool.Pool, sessions sessionManager, secureCookies bool) gin.
 // @Router /auth/refresh [post]
 func RefreshToken(sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		refreshToken, err := c.Cookie(refreshCookieName)
+		refreshToken, err := c.Cookie(authservices.RefreshCookieName)
 		if err != nil || refreshToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Missing refresh token"})
 			return
@@ -279,7 +277,7 @@ func RefreshToken(sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 // @Router /auth/logout [post]
 func Logout(sessions sessionManager, secureCookies bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		refreshToken, _ := c.Cookie(refreshCookieName)
+		refreshToken, _ := c.Cookie(authservices.RefreshCookieName)
 		if err := sessions.Revoke(c.Request.Context(), refreshToken); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not revoke session"})
 			return
@@ -299,7 +297,7 @@ func setAuthCookies(
 ) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie(
-		accessCookieName,
+		authservices.AccessCookieName,
 		accessToken,
 		int(authservices.AccessTime.Seconds()),
 		"/",
@@ -308,7 +306,7 @@ func setAuthCookies(
 		true,
 	)
 	c.SetCookie(
-		refreshCookieName,
+		authservices.RefreshCookieName,
 		refreshToken,
 		int(authservices.RefreshTime.Seconds()),
 		refreshCookiePath,
@@ -325,11 +323,21 @@ func setAuthCookies(
 		secure,
 		false,
 	)
+	c.SetCookie(
+		authservices.SessionCookieName,
+		"active",
+		int(authservices.RefreshTime.Seconds()),
+		"/",
+		"",
+		secure,
+		true,
+	)
 }
 
 func clearAuthCookies(c *gin.Context, secure bool) {
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie(accessCookieName, "", -1, "/", "", secure, true)
-	c.SetCookie(refreshCookieName, "", -1, refreshCookiePath, "", secure, true)
+	c.SetCookie(authservices.AccessCookieName, "", -1, "/", "", secure, true)
+	c.SetCookie(authservices.RefreshCookieName, "", -1, refreshCookiePath, "", secure, true)
 	c.SetCookie(authservices.CSRFCookieName, "", -1, csrfCookiePath, "", secure, false)
+	c.SetCookie(authservices.SessionCookieName, "", -1, "/", "", secure, true)
 }

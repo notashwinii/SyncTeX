@@ -10,12 +10,12 @@ import (
 	"github.com/synctex-org/backend/schemas/authSchemas"
 )
 
-// AuthRequired validates JWT from cookie `token` or Authorization: Bearer <token>.
+// AuthRequired validates JWT from the access cookie or Authorization: Bearer <token>.
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var tokenString string
 
-		if cookie, err := c.Cookie("token"); err == nil && cookie != "" {
+		if cookie, err := c.Cookie(authservices.AccessCookieName); err == nil && cookie != "" {
 			tokenString = cookie
 			c.Set(authSourceKey, authSourceCookie)
 		} else {

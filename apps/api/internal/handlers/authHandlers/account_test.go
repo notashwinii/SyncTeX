@@ -162,7 +162,7 @@ func TestResetPasswordClearsAuthenticationCookies(t *testing.T) {
 	if accounts.resetToken != "reset-token" {
 		t.Fatalf("reset token = %q, want reset-token", accounts.resetToken)
 	}
-	if len(recorder.Result().Cookies()) != 3 {
-		t.Fatalf("cleared cookie count = %d, want 3", len(recorder.Result().Cookies()))
+	if len(recorder.Result().Cookies()) != 4 {
+		t.Fatalf("cleared cookie count = %d, want 4", len(recorder.Result().Cookies()))
 	}
 }

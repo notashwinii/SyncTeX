@@ -137,7 +137,7 @@ func SetupRouter(
 				Limit:  options.AuthRateLimits.Refresh.Limit,
 				Window: options.AuthRateLimits.Refresh.Window,
 				Identity: func(c *gin.Context) (string, error) {
-					refreshToken, err := c.Cookie("refresh_token")
+					refreshToken, err := c.Cookie(authservices.RefreshCookieName)
 					if err != nil {
 						return "", err
 					}

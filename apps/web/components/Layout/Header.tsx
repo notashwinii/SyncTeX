@@ -6,11 +6,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronDown, LogOut, Sun, Moon } from 'lucide-react';
+import { PUBLIC_ROUTES } from '@/lib/config';
 import styles from './Header.module.css';
 
 export default function Header() {
   const pathname = usePathname();
-  const isPublicRoute = pathname === '/' || pathname === '/login' || pathname === '/signup';
+  const isPublicRoute = PUBLIC_ROUTES.has(pathname);
   
   const { logout, isLogoutLoading, user } = useAuth({ fetchUser: !isPublicRoute });
   const { theme, toggleTheme } = useTheme();
