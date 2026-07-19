@@ -21,6 +21,7 @@ import (
 	"github.com/synctex-org/backend/internal/config/db"
 	"github.com/synctex-org/backend/internal/router"
 	authservices "github.com/synctex-org/backend/internal/services/authServices"
+	emailservices "github.com/synctex-org/backend/internal/services/emailServices"
 	ratelimitservices "github.com/synctex-org/backend/internal/services/rateLimitServices"
 	storage "github.com/synctex-org/backend/internal/services/storageService"
 )
@@ -42,6 +43,14 @@ func main() {
 		log.Fatal(err)
 	}
 	defer rateLimiter.Close()
+
+	accountEmails := emailservices.NewAccountEmailSender(
+		environment.EmailMode,
+		environment.PublicAppURL,
+	)
+	if !accountEmails.IsConfigured() {
+		log.Fatal("SMTP settings are required when EMAIL_DELIVERY_MODE=smtp")
+	}
 
 	pool, err := db.Connect(context.Background(), environment.DBURI)
 	if err != nil {
@@ -69,6 +78,7 @@ func main() {
 		SecureCookies:  environment.SecureCookies,
 		RateLimiter:    rateLimiter,
 		AuthRateLimits: environment.AuthRateLimits,
+		AccountEmails:  accountEmails,
 	})
 	if err != nil {
 		log.Fatal(err)

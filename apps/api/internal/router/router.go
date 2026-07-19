@@ -24,6 +24,7 @@ import (
 	"github.com/synctex-org/backend/internal/handlers/workspaceHandlers"
 	"github.com/synctex-org/backend/internal/middleware"
 	authservices "github.com/synctex-org/backend/internal/services/authServices"
+	emailservices "github.com/synctex-org/backend/internal/services/emailServices"
 	storageServices "github.com/synctex-org/backend/internal/services/storageService"
 )
 
@@ -33,6 +34,7 @@ type Options struct {
 	SecureCookies  bool
 	RateLimiter    middleware.RateLimiter
 	AuthRateLimits appconfig.AuthRateLimits
+	AccountEmails  *emailservices.AccountEmailSender
 }
 
 type databaseHealthChecker interface {
@@ -49,10 +51,14 @@ func SetupRouter(
 	if err := r.SetTrustedProxies(options.TrustedProxies); err != nil {
 		return nil, fmt.Errorf("configure trusted proxies: %w", err)
 	}
+	if options.AccountEmails == nil {
+		return nil, fmt.Errorf("configure account email sender")
+	}
 
 	fileService := storageServices.NewFileService(pool)
 	storageHandler := storageHandlers.NewHandler(s3, fileService)
 	sessionManager := authservices.NewSessionManager(pool)
+	accountManager := authservices.NewAccountManager(pool)
 
 	config := cors.Config{
 		AllowOrigins: options.AllowedOrigins,
@@ -94,7 +100,10 @@ func SetupRouter(
 			Identity: middleware.ClientIPIdentity,
 		},
 	)
-	registerHandlers = append(registerHandlers, authHandlers.Register(pool))
+	registerHandlers = append(
+		registerHandlers,
+		authHandlers.Register(accountManager, options.AccountEmails),
+	)
 	auth.POST("/register", registerHandlers...)
 
 	loginHandlers := rateLimitedHandlers(
@@ -147,6 +156,40 @@ func SetupRouter(
 		middleware.RequireCSRF(),
 		authHandlers.Logout(sessionManager, options.SecureCookies),
 	)
+
+	accountEmailLimit := func(scope string) []gin.HandlerFunc {
+		return rateLimitedHandlers(
+			options.RateLimiter,
+			middleware.RateLimit{
+				Scope:    scope,
+				Limit:    options.AuthRateLimits.AccountEmail.Limit,
+				Window:   options.AuthRateLimits.AccountEmail.Window,
+				Identity: middleware.ClientIPIdentity,
+			},
+		)
+	}
+
+	resendHandlers := accountEmailLimit("auth-verification-resend-ip")
+	resendHandlers = append(
+		resendHandlers,
+		authHandlers.ResendVerification(accountManager, options.AccountEmails),
+	)
+	auth.POST("/verification/resend", resendHandlers...)
+	auth.POST("/verification/confirm", authHandlers.ConfirmVerification(accountManager))
+
+	forgotHandlers := accountEmailLimit("auth-password-forgot-ip")
+	forgotHandlers = append(
+		forgotHandlers,
+		authHandlers.ForgotPassword(accountManager, options.AccountEmails),
+	)
+	auth.POST("/password/forgot", forgotHandlers...)
+
+	resetHandlers := accountEmailLimit("auth-password-reset-ip")
+	resetHandlers = append(
+		resetHandlers,
+		authHandlers.ResetPassword(accountManager, options.SecureCookies),
+	)
+	auth.POST("/password/reset", resetHandlers...)
 
 	// Authenticated routes
 	secured := api.Group("")

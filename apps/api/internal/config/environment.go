@@ -25,6 +25,8 @@ type Environment struct {
 	S3Bucket        string
 	RedisURL        string
 	AuthRateLimits  AuthRateLimits
+	EmailMode       string
+	PublicAppURL    string
 }
 
 type RateLimit struct {
@@ -37,6 +39,7 @@ type AuthRateLimits struct {
 	LoginAccount RateLimit
 	RegisterIP   RateLimit
 	Refresh      RateLimit
+	AccountEmail RateLimit
 }
 
 func LoadEnvironment() (Environment, error) {
@@ -51,6 +54,10 @@ func LoadEnvironment() (Environment, error) {
 		"B2_REGION":       strings.TrimSpace(os.Getenv("B2_REGION")),
 		"B2_BUCKET":       strings.TrimSpace(os.Getenv("B2_BUCKET")),
 		"REDIS_URL":       strings.TrimSpace(os.Getenv("REDIS_URL")),
+		"EMAIL_DELIVERY_MODE": strings.TrimSpace(
+			os.Getenv("EMAIL_DELIVERY_MODE"),
+		),
+		"PUBLIC_APP_URL": strings.TrimSpace(os.Getenv("PUBLIC_APP_URL")),
 		"RATE_LOGIN_IP_LIMIT": strings.TrimSpace(
 			os.Getenv("RATE_LOGIN_IP_LIMIT"),
 		),
@@ -74,6 +81,12 @@ func LoadEnvironment() (Environment, error) {
 		),
 		"RATE_REFRESH_WINDOW": strings.TrimSpace(
 			os.Getenv("RATE_REFRESH_WINDOW"),
+		),
+		"RATE_ACCOUNT_EMAIL_IP_LIMIT": strings.TrimSpace(
+			os.Getenv("RATE_ACCOUNT_EMAIL_IP_LIMIT"),
+		),
+		"RATE_ACCOUNT_EMAIL_IP_WINDOW": strings.TrimSpace(
+			os.Getenv("RATE_ACCOUNT_EMAIL_IP_WINDOW"),
 		),
 	}
 
@@ -112,6 +125,15 @@ func LoadEnvironment() (Environment, error) {
 	if err != nil {
 		return Environment{}, err
 	}
+	accountEmail, err := parseRateLimit(required, "RATE_ACCOUNT_EMAIL_IP")
+	if err != nil {
+		return Environment{}, err
+	}
+
+	emailMode := strings.ToLower(required["EMAIL_DELIVERY_MODE"])
+	if emailMode != "log" && emailMode != "smtp" {
+		return Environment{}, fmt.Errorf("EMAIL_DELIVERY_MODE must be log or smtp")
+	}
 
 	port := strings.TrimSpace(os.Getenv("PORT"))
 	if port == "" {
@@ -131,11 +153,14 @@ func LoadEnvironment() (Environment, error) {
 		S3Region:        required["B2_REGION"],
 		S3Bucket:        required["B2_BUCKET"],
 		RedisURL:        required["REDIS_URL"],
+		EmailMode:       emailMode,
+		PublicAppURL:    strings.TrimRight(required["PUBLIC_APP_URL"], "/"),
 		AuthRateLimits: AuthRateLimits{
 			LoginIP:      loginIP,
 			LoginAccount: loginAccount,
 			RegisterIP:   registerIP,
 			Refresh:      refresh,
+			AccountEmail: accountEmail,
 		},
 	}, nil
 }

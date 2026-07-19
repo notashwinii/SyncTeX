@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"log"
 	"net/smtp"
+	"net/url"
 	"os"
+	"strings"
 )
 
 type EmailService struct {
@@ -14,6 +17,87 @@ type EmailService struct {
 	SMTPUser string
 	SMTPPass string
 	FromName string
+}
+
+type AccountEmailSender struct {
+	email        *EmailService
+	mode         string
+	publicAppURL string
+}
+
+func NewAccountEmailSender(mode string, publicAppURL string) *AccountEmailSender {
+	return &AccountEmailSender{
+		email:        NewEmailService(),
+		mode:         mode,
+		publicAppURL: strings.TrimRight(publicAppURL, "/"),
+	}
+}
+
+func (sender *AccountEmailSender) IsConfigured() bool {
+	return sender.mode == "log" || sender.email.IsConfigured()
+}
+
+func (sender *AccountEmailSender) SendVerification(to string, token string) error {
+	actionURL := sender.publicAppURL + "/verify-email?token=" + url.QueryEscape(token)
+	return sender.sendAccountEmail(
+		to,
+		"Verify your SyncTeX email",
+		"Verify email",
+		"Verify your email address to finish setting up your SyncTeX account.",
+		actionURL,
+	)
+}
+
+func (sender *AccountEmailSender) SendPasswordReset(to string, token string) error {
+	actionURL := sender.publicAppURL + "/reset-password?token=" + url.QueryEscape(token)
+	return sender.sendAccountEmail(
+		to,
+		"Reset your SyncTeX password",
+		"Reset password",
+		"Use this link to choose a new SyncTeX password. The link expires in 30 minutes.",
+		actionURL,
+	)
+}
+
+func (sender *AccountEmailSender) sendAccountEmail(
+	to string,
+	subject string,
+	actionLabel string,
+	message string,
+	actionURL string,
+) error {
+	if sender.mode == "log" {
+		log.Printf("development account email to %s: %s", to, actionURL)
+		return nil
+	}
+
+	const accountTemplate = `<!doctype html>
+<html>
+<body style="font-family:Arial,sans-serif;color:#1f2937;line-height:1.5">
+  <h1 style="font-size:24px">SyncTeX</h1>
+  <p>{{.Message}}</p>
+  <p><a href="{{.ActionURL}}">{{.ActionLabel}}</a></p>
+  <p style="font-size:13px;color:#6b7280">If you did not request this, ignore this email.</p>
+</body>
+</html>`
+
+	tmpl, err := template.New("account").Parse(accountTemplate)
+	if err != nil {
+		return fmt.Errorf("parse account email template: %w", err)
+	}
+	var body bytes.Buffer
+	if err := tmpl.Execute(&body, struct {
+		Message     string
+		ActionURL   string
+		ActionLabel string
+	}{
+		Message:     message,
+		ActionURL:   actionURL,
+		ActionLabel: actionLabel,
+	}); err != nil {
+		return fmt.Errorf("render account email template: %w", err)
+	}
+	return sender.email.SendEmail(to, subject, body.String())
 }
 
 func NewEmailService() *EmailService {

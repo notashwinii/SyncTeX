@@ -9,7 +9,6 @@ import (
 	"time"
 
 	errorhandler "github.com/synctex-org/backend/errorHandler"
-	"github.com/synctex-org/backend/internal/queries/authQueries"
 	authservices "github.com/synctex-org/backend/internal/services/authServices"
 
 	"github.com/synctex-org/backend/schemas/authSchemas"
@@ -33,6 +32,25 @@ type sessionManager interface {
 	Revoke(context.Context, string) error
 }
 
+type accountManager interface {
+	Register(context.Context, string, string, string) (authservices.AccountToken, error)
+	IssueEmailVerification(
+		context.Context,
+		string,
+	) (authservices.AccountToken, bool, error)
+	IssuePasswordReset(
+		context.Context,
+		string,
+	) (authservices.AccountToken, bool, error)
+	VerifyEmail(context.Context, string) error
+	ResetPassword(context.Context, string, string) error
+}
+
+type accountEmailSender interface {
+	SendVerification(string, string) error
+	SendPasswordReset(string, string) error
+}
+
 // Register godoc
 // @Summary Register a new user
 // @Description Register a new user with email, username and password
@@ -44,7 +62,7 @@ type sessionManager interface {
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /auth/register [post]
-func Register(pool *pgxpool.Pool) gin.HandlerFunc {
+func Register(accounts accountManager, emails accountEmailSender) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request authSchemas.RegisterRequest
 
@@ -64,9 +82,6 @@ func Register(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		request.Email = strings.ToLower(strings.TrimSpace(request.Email))
-		request.Username = strings.TrimSpace(request.Username)
-
 		ctx := c.Request.Context()
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -74,7 +89,12 @@ func Register(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		_, err = pool.Exec(ctx, authQueries.Query.Register, request.Email, request.Username, string(hashedPassword))
+		verification, err := accounts.Register(
+			ctx,
+			request.Email,
+			request.Username,
+			string(hashedPassword),
+		)
 		if err != nil {
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) && pgErr.Code == "23505" {
@@ -96,7 +116,22 @@ func Register(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusCreated, gin.H{"message": "User " + request.Username + " registered successfully"})
+		if err := emails.SendVerification(verification.Email, verification.Token); err != nil {
+			log.Printf("send registration verification email: %v", err)
+			c.JSON(
+				http.StatusServiceUnavailable,
+				gin.H{
+					"code":    "EMAIL_DELIVERY_FAILED",
+					"message": "Account created, but the verification email could not be sent",
+				},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusCreated,
+			gin.H{"message": "Account created. Check your email to verify it."},
+		)
 	}
 
 }
