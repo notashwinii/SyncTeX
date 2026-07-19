@@ -35,6 +35,24 @@
   display: block;
 }
 
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.forgotLink {
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
 .input {
   padding: 0.875rem 1rem;
   border: 2px solid var(--border-color);
@@ -206,4 +224,3 @@
     font-size: 1.5rem;
   }
 }
-

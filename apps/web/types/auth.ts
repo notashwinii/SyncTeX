@@ -10,6 +10,15 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface EmailRequest {
+  email: string;
+}
+
+export interface PasswordResetRequest {
+  token: string;
+  password: string;
+}
+
 export interface SessionResponse {
   expires_in: number;
 }
